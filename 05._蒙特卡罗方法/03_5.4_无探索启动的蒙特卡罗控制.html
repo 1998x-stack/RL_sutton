@@ -1,0 +1,255 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <title>5.4 无探索启动的蒙特卡罗控制</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Math&display=swap">
+  <link rel="stylesheet" href="../markdown.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="../markdown.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>03_5.4_无探索启动的蒙特卡罗控制</h1>
+<pre><code>Lecture: /05._蒙特卡罗方法
+Content: 03_5.4_无探索启动的蒙特卡罗控制
+</code></pre>
+<h3>03_5.4 无探索启动的蒙特卡罗控制</h3>
+<h4>无探索启动的蒙特卡罗控制简介</h4>
+<p>无探索启动的蒙特卡罗控制（Monte Carlo Control without Exploring Starts）是一种无需假设探索启动的蒙特卡罗方法。这种方法解决了探索启动假设在实际环境中不切实际的问题，通过策略的改进来保证所有动作都有被选择的可能性。它主要通过策略评估和策略改进交替进行，不断接近最优策略和最优值函数。</p>
+<h4>无探索启动的蒙特卡罗控制的核心概念</h4>
+<ol>
+<li>
+<p><strong>策略评估</strong>：</p>
+<ul>
+<li>在策略评估过程中，通过生成序列并计算回报，来估计当前策略下的动作值函数 $q_\pi(s, a)$。</li>
+<li>蒙特卡罗方法通过对多次访问的平均值来估计动作值函数，每次访问的回报都会对动作值函数的估计产生影响。</li>
+</ul>
+</li>
+<li>
+<p><strong>策略改进</strong>：</p>
+<ul>
+<li>在策略改进过程中，通过使用当前估计的动作值函数来改进策略，使其在每个状态选择使期望回报最大的动作。</li>
+<li>为了保证持续探索，采用 $\epsilon$-贪心策略。即大部分时间选择当前估计的最优动作，但也有一定概率选择随机动作。</li>
+</ul>
+</li>
+<li>
+<p><strong>$\epsilon$-贪心策略</strong>：</p>
+<ul>
+<li>$\epsilon$-贪心策略是一种$\epsilon$-软策略，这意味着在任何状态下，每个动作都有被选择的概率。这种策略逐渐向确定性最优策略逼近。</li>
+<li>具体来说，对于每个状态 $s$，选择动作 $a$ 的概率为：
+$$
+\pi(a|s) =
+\begin{cases}
+1 - \epsilon + \frac{\epsilon}{|A(s)|} &amp; \text{如果} \ a \ 是最优动作 \
+\frac{\epsilon}{|A(s)|} &amp; \text{如果} \ a \ 不是最优动作
+\end{cases}
+$$</li>
+<li>这种方法保证了即使在策略改进过程中，也不会完全忽略非最优动作，从而保证所有状态-动作对都有被访问的机会。</li>
+</ul>
+</li>
+</ol>
+<h4>无探索启动的蒙特卡罗控制的步骤</h4>
+<ol>
+<li>
+<p><strong>初始化</strong>：</p>
+<ul>
+<li>随机初始化一个$\epsilon$-软策略和动作值函数 $Q(s, a)$。</li>
+<li>创建一个空的回报列表，用于存储每个状态-动作对的回报。</li>
+</ul>
+</li>
+<li>
+<p><strong>生成序列</strong>：</p>
+<ul>
+<li>根据当前策略生成一个完整序列，包含状态、动作和相应的奖励。</li>
+</ul>
+</li>
+<li>
+<p><strong>更新动作值函数</strong>：</p>
+<ul>
+<li>使用生成的序列计算每个状态-动作对的回报，并更新动作值函数 $Q(s, a)$。</li>
+</ul>
+</li>
+<li>
+<p><strong>策略改进</strong>：</p>
+<ul>
+<li>使用更新后的动作值函数改进策略，使其在每个状态选择使期望回报最大的动作，采用$\epsilon$-贪心策略以保证探索。</li>
+</ul>
+</li>
+<li>
+<p><strong>重复</strong>：</p>
+<ul>
+<li>反复进行生成序列、更新动作值函数和策略改进，直到策略和动作值函数收敛。</li>
+</ul>
+</li>
+</ol>
+<h4>蒙特卡罗方法的实际应用</h4>
+<p><strong>示例：二十一点（Blackjack）</strong>：</p>
+<ul>
+<li>在二十一点游戏中，玩家的目标是在不超过21点的情况下，尽量接近21点。无探索启动的蒙特卡罗控制方法可以用于估计玩家在不同策略下的动作值函数。例如，假设一个初始策略是玩家在手牌总数为20或21时停牌，否则继续要牌。通过模拟大量的二十一点游戏，可以找到最优策略。</li>
+</ul>
+<h4>无探索启动的蒙特卡罗方法的优缺点</h4>
+<p><strong>优点</strong>：</p>
+<ol>
+<li><strong>无需探索启动假设</strong>：无探索启动的蒙特卡罗方法避免了探索启动假设，使其更适用于实际环境。</li>
+<li><strong>简单易行</strong>：通过对回报的简单平均来估计值函数，理论上简单易行。</li>
+<li><strong>适用于大规模问题</strong>：特别适合用于估计特定状态-动作对的值函数，而不需要计算所有状态的值函数。</li>
+</ol>
+<p><strong>缺点</strong>：</p>
+<ol>
+<li><strong>高方差</strong>：蒙特卡罗方法的估计具有高方差，收敛速度可能较慢。</li>
+<li><strong>需要保证探索</strong>：采用$\epsilon$-贪心策略需要合理选择$\epsilon$值，以保证探索和利用的平衡。</li>
+</ol>
+<h4>结论</h4>
+<p>无探索启动的蒙特卡罗控制方法通过对从环境中采样得到的序列数据进行平均，能够有效地估计状态-动作对的值函数。其无需环境模型、适用于大规模问题的特点，使其在实践中具有广泛的应用前景。通过结合策略评估和策略改进，无探索启动的蒙特卡罗方法能够逐步逼近最优策略，解决复杂的决策问题。</p>
+<h3>总结</h3>
+<p>无探索启动的蒙特卡罗控制方法通过对采样数据的平均来估计状态-动作对的值，适用于不完全了解环境的情况。采用$\epsilon$-贪心策略保证了所有动作都有被选择的可能性，避免了探索启动假设的不现实性。应用案例如二十一点游戏展示了其在实际问题中的有效性。总的来说，无探索启动的蒙特卡罗控制方法在解决强化学习问题中具有重要作用和广泛应用前景。</p>
+
+    <h3>Python 文件</h3>
+    <pre><code># 03_5.4_无探索启动的蒙特卡罗控制
+
+"""
+Lecture: /05._蒙特卡罗方法
+Content: 03_5.4_无探索启动的蒙特卡罗控制
+"""
+
+import numpy as np
+from typing import Dict, Tuple, List
+
+class MonteCarloControlWithoutExploringStarts:
+    """
+    无探索启动的蒙特卡罗控制类，包含用于求解马尔可夫决策过程（MDP）的策略评估和改进算法。
+
+    Attributes:
+        states: 状态集合
+        actions: 动作集合
+        transition_probabilities: 状态转移概率矩阵
+        rewards: 奖励矩阵
+        gamma: 折扣因子
+        epsilon: 探索率
+    """
+
+    def __init__(self, states: List[int], actions: List[int],
+                 transition_probabilities: Dict[Tuple[int, int, int], float],
+                 rewards: Dict[Tuple[int, int, int], float], gamma: float, epsilon: float):
+        """
+        初始化无探索启动的蒙特卡罗控制类。
+
+        参数:
+            states: 状态集合
+            actions: 动作集合
+            transition_probabilities: 状态转移概率矩阵
+            rewards: 奖励矩阵
+            gamma: 折扣因子
+            epsilon: 探索率
+        """
+        self.states = states
+        self.actions = actions
+        self.transition_probabilities = transition_probabilities
+        self.rewards = rewards
+        self.gamma = gamma
+        self.epsilon = epsilon
+        self.q_value = {(s, a): 0 for s in states for a in actions}
+        self.returns = {(s, a): [] for s in states for a in actions}
+        self.policy = {s: np.random.choice(actions) for s in states}
+
+    def generate_episode(self) -> List[Tuple[int, int, float]]:
+        """
+        生成一个遵循当前策略的完整序列。
+
+        返回:
+            List[Tuple[int, int, float]]: 序列列表，包含状态、动作和奖励
+        """
+        episode = []
+        state = np.random.choice(self.states)
+        while True:
+            action = self.policy[state] if np.random.rand() > self.epsilon else np.random.choice(self.actions)
+            next_state = np.random.choice(self.states, p=[self.transition_probabilities[(state, action, s)] for s in self.states])
+            reward = self.rewards[(state, action, next_state)]
+            episode.append((state, action, reward))
+            if next_state == None:  # 假设终止状态用 None 表示
+                break
+            state = next_state
+        return episode
+
+    def update_q_value(self, episode: List[Tuple[int, int, float]]) -> None:
+        """
+        使用生成的序列更新动作值函数。
+
+        参数:
+            episode: 序列列表，包含状态、动作和奖励
+        """
+        G = 0
+        episode.reverse()
+        visited = set()
+        for state, action, reward in episode:
+            G = self.gamma * G + reward
+            if (state, action) not in visited:
+                self.returns[(state, action)].append(G)
+                self.q_value[(state, action)] = np.mean(self.returns[(state, action)])
+                visited.add((state, action))
+
+    def policy_improvement(self) -> None:
+        """
+        根据当前的动作值函数改进策略。
+        """
+        for state in self.states:
+            action_values = {a: self.q_value[(state, a)] for a in self.actions}
+            self.policy[state] = max(action_values, key=action_values.get)
+
+    def monte_carlo_control(self, num_episodes: int) -> None:
+        """
+        蒙特卡罗控制算法，通过策略评估和策略改进找到最优策略。
+
+        参数:
+            num_episodes: 运行的序列数量
+        """
+        for _ in range(num_episodes):
+            episode = self.generate_episode()
+            self.update_q_value(episode)
+            self.policy_improvement()
+
+# 测试代码
+if __name__ == "__main__":
+    # 定义状态、动作、转移概率和奖励
+    states = [0, 1, 2, 3]
+    actions = [0, 1]
+    transition_probabilities = {
+        (0, 0, 0): 0.7, (0, 0, 1): 0.3,
+        (0, 1, 0): 0.4, (0, 1, 1): 0.6,
+        (1, 0, 2): 0.8, (1, 0, 3): 0.2,
+        (1, 1, 2): 0.5, (1, 1, 3): 0.5,
+        (2, 0, 0): 0.9, (2, 0, 1): 0.1,
+        (2, 1, 0): 0.2, (2, 1, 1): 0.8,
+        (3, 0, 2): 0.6, (3, 0, 3): 0.4,
+        (3, 1, 2): 0.3, (3, 1, 3): 0.7,
+    }
+    rewards = {
+        (0, 0, 0): 5, (0, 0, 1): 10,
+        (0, 1, 0): 2, (0, 1, 1): 7,
+        (1, 0, 2): 15, (1, 0, 3): 20,
+        (1, 1, 2): 9, (1, 1, 3): 13,
+        (2, 0, 0): 6, (2, 0, 1): 8,
+        (2, 1, 0): 3, (2, 1, 1): 4,
+        (3, 0, 2): 12, (3, 0, 3): 18,
+        (3, 1, 2): 14, (3, 1, 3): 11,
+    }
+    gamma = 0.9
+    epsilon = 0.1
+    num_episodes = 1000
+
+    mc_control = MonteCarloControlWithoutExploringStarts(states, actions, transition_probabilities, rewards, gamma, epsilon)
+    mc_control.monte_carlo_control(num_episodes)
+
+    print("最终动作值函数:", mc_control.q_value)
+    print("最终策略:", mc_control.policy)</code></pre>
+  </div>
+</body>
+</html>
+  

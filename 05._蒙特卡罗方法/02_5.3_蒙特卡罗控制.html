@@ -1,0 +1,103 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <title>5.3 蒙特卡罗控制</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Math&display=swap">
+  <link rel="stylesheet" href="../markdown.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="../markdown.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>02_5.3_蒙特卡罗控制</h1>
+<pre><code>Lecture: /05._蒙特卡罗方法
+Content: 02_5.3_蒙特卡罗控制
+</code></pre>
+<h3>02_5.3 蒙特卡罗控制</h3>
+<h4>蒙特卡罗控制简介</h4>
+<p>蒙特卡罗控制方法用于估计最优策略，其核心思想是基于通用策略迭代（Generalized Policy Iteration, GPI）的框架。GPI包括策略评估和策略改进两个相互交替的过程。蒙特卡罗方法通过平均从状态中采样得到的回报来近似值函数，而不需要模型来计算每个状态的值。</p>
+<h4>蒙特卡罗控制的核心概念</h4>
+<ol>
+<li>
+<p><strong>通用策略迭代（GPI）</strong>：</p>
+<ul>
+<li>GPI保持近似的策略和近似的值函数，通过反复的策略评估和策略改进，逐步逼近最优策略和最优值函数。</li>
+</ul>
+</li>
+<li>
+<p><strong>策略评估</strong>：</p>
+<ul>
+<li>蒙特卡罗方法用于策略评估时，通过采样大量序列，计算从每个状态开始的平均回报，得到状态值函数或动作值函数。</li>
+<li>在策略评估步骤中，观察到的回报用于更新动作值函数 $q_\pi(s, a)$。</li>
+</ul>
+</li>
+<li>
+<p><strong>策略改进</strong>：</p>
+<ul>
+<li>在策略改进步骤中，通过当前的动作值函数改进策略，使其在每个状态选择使期望回报最大的动作。</li>
+</ul>
+</li>
+<li>
+<p><strong>探索起点假设</strong>：</p>
+<ul>
+<li>保证所有状态-动作对被访问的假设，即每个状态-动作对都有非零概率被选为起点。这保证了所有状态-动作对在无限次数的序列中会被访问。</li>
+<li>这种假设在实际环境中可能不适用，因此通常采用随机策略保证探索。</li>
+</ul>
+</li>
+<li>
+<p><strong>蒙特卡罗ES（Exploring Starts）算法</strong>：</p>
+<ul>
+<li>蒙特卡罗ES算法结合策略评估和策略改进，在每次序列后对访问过的状态进行评估和改进。</li>
+<li>算法流程：
+<ol>
+<li>初始化：随机初始化策略和动作值函数。</li>
+<li>生成序列：从随机选择的状态-动作对开始生成序列。</li>
+<li>更新动作值函数：通过序列中的回报更新动作值函数。</li>
+<li>改进策略：使策略在每个状态选择使动作值最大的动作。</li>
+</ol>
+</li>
+</ul>
+</li>
+</ol>
+<h4>蒙特卡罗控制的实际应用</h4>
+<p><strong>示例：二十一点（Blackjack）</strong>：</p>
+<ul>
+<li>在二十一点游戏中，玩家的目标是在不超过21点的情况下，尽量接近21点。蒙特卡罗ES算法可以用于估计玩家在不同策略下的动作值函数。例如，通过模拟大量的二十一点游戏，可以找到最优策略。</li>
+</ul>
+<h4>蒙特卡罗方法的优缺点</h4>
+<p><strong>优点</strong>：</p>
+<ol>
+<li><strong>不需要模型</strong>：蒙特卡罗方法只需要从环境中采样得到的序列数据，不需要对环境的完全了解。</li>
+<li><strong>简单易行</strong>：通过对回报的简单平均来估计值函数，理论上简单易行。</li>
+<li><strong>适用于大规模问题</strong>：特别适合用于估计特定状态-动作对的值函数，而不需要计算所有状态的值函数。</li>
+</ol>
+<p><strong>缺点</strong>：</p>
+<ol>
+<li><strong>高方差</strong>：蒙特卡罗方法的估计具有高方差，收敛速度可能较慢。</li>
+<li><strong>探索问题</strong>：需要确保所有动作都有被选择的可能性，否则无法估计某些动作的值。</li>
+</ol>
+<h4>结论</h4>
+<p>蒙特卡罗控制方法通过对从环境中采样得到的序列数据进行平均，能够有效地估计状态-动作对的值函数。其无需环境模型、适用于大规模问题的特点，使其在实践中具有广泛的应用前景。通过结合策略评估和策略改进，蒙特卡罗方法能够逐步逼近最优策略，解决复杂的决策问题。</p>
+<h3>总结</h3>
+<p>蒙特卡罗控制方法通过对采样数据的平均来估计状态-动作对的值，适用于不完全了解环境的情况。蒙特卡罗ES算法结合策略评估和策略改进，通过模拟序列进行策略优化。应用案例如二十一点游戏展示了其在实际问题中的有效性。总的来说，蒙特卡罗控制方法在解决强化学习问题中具有重要作用和广泛应用前景。</p>
+
+    <h3>Python 文件</h3>
+    <pre><code># 02_5.3_蒙特卡罗控制
+
+"""
+Lecture: /05._蒙特卡罗方法
+Content: 02_5.3_蒙特卡罗控制
+"""
+
+</code></pre>
+  </div>
+</body>
+</html>
+  

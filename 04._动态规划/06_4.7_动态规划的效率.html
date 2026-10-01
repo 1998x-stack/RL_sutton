@@ -1,0 +1,286 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <title>4.7 动态规划的效率</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Math&display=swap">
+  <link rel="stylesheet" href="../markdown.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="../markdown.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>06_4.7_动态规划的效率</h1>
+<pre><code>Lecture: /04._动态规划
+Content: 06_4.7_动态规划的效率
+</code></pre>
+<h3>06_4.7 动态规划的效率详细分析</h3>
+<h4>动态规划的效率简介</h4>
+<p>动态规划（Dynamic Programming, DP）是一组用于计算最优策略的算法，给定一个完美的环境模型作为马尔可夫决策过程（MDP）。虽然经典的DP算法在强化学习中有其局限性，但它们在理论上仍然非常重要。动态规划为理解强化学习方法提供了必要的基础。</p>
+<h4>动态规划效率的核心概念</h4>
+<ol>
+<li>
+<p><strong>多项式时间复杂度</strong>：</p>
+<ul>
+<li>与解决MDP的其他方法相比，DP方法实际上是非常高效的。如果忽略一些技术细节，DP方法找到最优策略的时间复杂度在状态和动作数量上是多项式级别的。</li>
+<li>具体来说，如果状态数量为 $ n $ 和动作数量为 $ k $，DP方法所需的计算操作数量小于某个 $ n $ 和 $ k $ 的多项式函数。</li>
+</ul>
+</li>
+<li>
+<p><strong>指数级加速</strong>：</p>
+<ul>
+<li>DP方法在找到最优策略方面比直接在策略空间中搜索要快得多。因为直接搜索需要对每个策略进行穷尽性检查，而DP方法可以在多项式时间内找到最优策略。</li>
+<li>线性规划方法也可以用于解决MDP问题，在某些情况下，其最坏情况下的收敛性保证比DP方法更好。但是，当状态数量较大时，线性规划方法变得不切实际，而DP方法仍然可行。</li>
+</ul>
+</li>
+<li>
+<p><strong>维数诅咒</strong>：</p>
+<ul>
+<li>大状态集确实会带来困难，但这是问题本身的固有困难，而不是DP作为解决方法的缺陷。实际上，与竞争方法（如直接搜索和线性规划）相比，DP更适合处理大状态空间。</li>
+</ul>
+</li>
+</ol>
+<h4>动态规划的步骤与应用</h4>
+<ol>
+<li>
+<p><strong>策略评估</strong>：</p>
+<ul>
+<li>策略评估的目标是计算给定策略 $\pi$ 的状态值函数 $v_\pi$，即在遵循策略 $\pi$ 的情况下，从某个状态开始的预期总回报。通过贝尔曼期望方程递推计算：
+$$
+v_\pi(s) = \sum_{a} \pi(a|s) \sum_{s', r} p(s', r|s, a) [r + \gamma v_\pi(s')]
+$$</li>
+<li>反复迭代直到值函数收敛。</li>
+</ul>
+</li>
+<li>
+<p><strong>策略改进</strong>：</p>
+<ul>
+<li>策略改进的目标是基于当前的值函数 $v_\pi$ 改进策略，使其变得贪心。通过贝尔曼最优方程进行策略改进：
+$$
+\pi'(s) = \arg\max_a \sum_{s', r} p(s', r|s, a) [r + \gamma v_\pi(s')]
+$$</li>
+</ul>
+</li>
+<li>
+<p><strong>收敛判定</strong>：</p>
+<ul>
+<li>检查策略是否收敛，如果是则终止，否则继续迭代。</li>
+</ul>
+</li>
+</ol>
+<h4>动态规划在实际中的应用</h4>
+<ol>
+<li>
+<p><strong>大规模MDP的解决</strong>：</p>
+<ul>
+<li>在实际应用中，DP方法可以用来解决具有数百万状态的MDP。策略迭代和值迭代都被广泛使用，通常比理论上的最坏情况运行时间快得多，尤其是在有良好初始值的情况下。</li>
+</ul>
+</li>
+<li>
+<p><strong>游戏中的应用</strong>：</p>
+<ul>
+<li>在复杂的游戏中，如国际象棋和围棋，状态空间非常庞大，传统的值迭代方法可能无法高效地处理。DP通过选择性地更新策略和状态值，大大提高计算效率。</li>
+</ul>
+</li>
+</ol>
+<h4>动态规划效率的优缺点</h4>
+<p><strong>优点</strong>：</p>
+<ol>
+<li><strong>处理大规模状态空间</strong>：DP方法可以高效地处理大规模状态空间的问题。</li>
+<li><strong>多项式时间复杂度</strong>：DP方法在找到最优策略方面比直接在策略空间中搜索要快得多。</li>
+<li><strong>适用广泛</strong>：DP方法适用于多种MDP问题。</li>
+</ol>
+<p><strong>缺点</strong>：</p>
+<ol>
+<li><strong>实现复杂</strong>：DP方法在实现上可能比简单的搜索方法复杂。</li>
+<li><strong>维数诅咒</strong>：尽管DP方法相对其他方法更好地处理了大状态空间，但大状态集仍然会带来计算上的困难。</li>
+</ol>
+<h4>结论</h4>
+<p>动态规划是一种高效且灵活的求解MDP问题的方法，通过选择性地更新状态值和策略，可以有效地处理大规模状态空间的问题。其多项式时间复杂度和广泛的适用范围使其成为解决复杂决策问题的理想选择。</p>
+<h3>总结</h3>
+<p>动态规划作为强化学习中的一种重要方法，通过选择性地更新状态值和策略，逐步逼近最优值函数和最优策略。尽管在实现上存在一定的复杂性，但其高效的计算性能和广泛的适用范围使其成为求解MDP问题的理想选择。</p>
+
+    <h3>Python 文件</h3>
+    <pre><code># 06_4.7_动态规划的效率
+
+"""
+Lecture: /04._动态规划
+Content: 06_4.7_动态规划的效率
+"""
+
+import numpy as np
+from typing import Dict, Tuple, List
+
+class DynamicProgrammingEfficiency:
+    """
+    动态规划效率类，包含用于求解马尔可夫决策过程（MDP）的策略迭代和值迭代算法。
+
+    Attributes:
+        states: 状态集合
+        actions: 动作集合
+        transition_probabilities: 状态转移概率矩阵
+        rewards: 奖励矩阵
+        gamma: 折扣因子
+        theta: 收敛阈值
+    """
+
+    def __init__(self, states: List[int], actions: List[int],
+                 transition_probabilities: Dict[Tuple[int, int, int], float],
+                 rewards: Dict[Tuple[int, int, int], float], gamma: float, theta: float):
+        """
+        初始化动态规划效率类。
+
+        参数:
+            states: 状态集合
+            actions: 动作集合
+            transition_probabilities: 状态转移概率矩阵
+            rewards: 奖励矩阵
+            gamma: 折扣因子
+            theta: 收敛阈值
+        """
+        self.states = states
+        self.actions = actions
+        self.transition_probabilities = transition_probabilities
+        self.rewards = rewards
+        self.gamma = gamma
+        self.theta = theta
+        self.value_function = {s: 0 for s in states}
+        self.policy = {s: np.random.choice(actions) for s in states}
+
+    def policy_evaluation(self) -> None:
+        """
+        策略评估，通过迭代计算当前策略的状态值函数，直到收敛。
+        """
+        while True:
+            delta = 0
+            for s in self.states:
+                v = self.value_function[s]
+                self.value_function[s] = sum(
+                    self.transition_probabilities[(s, self.policy[s], s_)] *
+                    (self.rewards[(s, self.policy[s], s_)] + self.gamma * self.value_function[s_])
+                    for s_ in self.states
+                )
+                delta = max(delta, abs(v - self.value_function[s]))
+            if delta < self.theta:
+                break
+
+    def policy_improvement(self) -> bool:
+        """
+        策略改进，根据当前的值函数改进策略。
+
+        返回:
+            bool: 如果策略稳定则返回 True，否则返回 False。
+        """
+        policy_stable = True
+        for s in self.states:
+            old_action = self.policy[s]
+            action_values = {
+                a: sum(
+                    self.transition_probabilities[(s, a, s_)] *
+                    (self.rewards[(s, a, s_)] + self.gamma * self.value_function[s_])
+                    for s_ in self.states
+                )
+                for a in self.actions
+            }
+            self.policy[s] = max(action_values, key=action_values.get)
+            if old_action != self.policy[s]:
+                policy_stable = False
+        return policy_stable
+
+    def policy_iteration(self) -> Tuple[Dict[int, float], Dict[int, int]]:
+        """
+        策略迭代，通过反复进行策略评估和策略改进，直到策略收敛。
+
+        返回:
+            Tuple[Dict[int, float], Dict[int, int]]: 最终的状态值函数和策略。
+        """
+        while True:
+            self.policy_evaluation()
+            if self.policy_improvement():
+                break
+        return self.value_function, self.policy
+
+    def value_iteration(self) -> Tuple[Dict[int, float], Dict[int, int]]:
+        """
+        值迭代，通过反复更新状态值函数，直到值函数收敛，并提取最优策略。
+
+        返回:
+            Tuple[Dict[int, float], Dict[int, int]]: 最终的状态值函数和策略。
+        """
+        while True:
+            delta = 0
+            for s in self.states:
+                v = self.value_function[s]
+                self.value_function[s] = max(
+                    sum(
+                        self.transition_probabilities[(s, a, s_)] *
+                        (self.rewards[(s, a, s_)] + self.gamma * self.value_function[s_])
+                        for s_ in self.states
+                    )
+                    for a in self.actions
+                )
+                delta = max(delta, abs(v - self.value_function[s]))
+            if delta < self.theta:
+                break
+
+        # 提取最优策略
+        for s in self.states:
+            action_values = {
+                a: sum(
+                    self.transition_probabilities[(s, a, s_)] *
+                    (self.rewards[(s, a, s_)] + self.gamma * self.value_function[s_])
+                    for s_ in self.states
+                )
+                for a in self.actions
+            }
+            self.policy[s] = max(action_values, key=action_values.get)
+
+        return self.value_function, self.policy
+
+# 测试代码
+if __name__ == "__main__":
+    # 定义状态、动作、转移概率和奖励
+    states = [0, 1, 2, 3]
+    actions = [0, 1]
+    transition_probabilities = {
+        (0, 0, 0): 0.7, (0, 0, 1): 0.3,
+        (0, 1, 0): 0.4, (0, 1, 1): 0.6,
+        (1, 0, 2): 0.8, (1, 0, 3): 0.2,
+        (1, 1, 2): 0.5, (1, 1, 3): 0.5,
+        (2, 0, 0): 0.9, (2, 0, 1): 0.1,
+        (2, 1, 0): 0.2, (2, 1, 1): 0.8,
+        (3, 0, 2): 0.6, (3, 0, 3): 0.4,
+        (3, 1, 2): 0.3, (3, 1, 3): 0.7,
+    }
+    rewards = {
+        (0, 0, 0): 5, (0, 0, 1): 10,
+        (0, 1, 0): 2, (0, 1, 1): 7,
+        (1, 0, 2): 15, (1, 0, 3): 20,
+        (1, 1, 2): 9, (1, 1, 3): 13,
+        (2, 0, 0): 6, (2, 0, 1): 8,
+        (2, 1, 0): 3, (2, 1, 1): 4,
+        (3, 0, 2): 12, (3, 0, 3): 18,
+        (3, 1, 2): 14, (3, 1, 3): 11,
+    }
+    gamma = 0.9
+    theta = 0.0001
+
+    dp_efficiency = DynamicProgrammingEfficiency(states, actions, transition_probabilities, rewards, gamma, theta)
+    value_function_pi, policy_pi = dp_efficiency.policy_iteration()
+    value_function_vi, policy_vi = dp_efficiency.value_iteration()
+
+    print("策略迭代 - 最终状态值函数:", value_function_pi)
+    print("策略迭代 - 最终策略:", policy_pi)
+    print("值迭代 - 最终状态值函数:", value_function_vi)
+    print("值迭代 - 最终策略:", policy_vi)
+</code></pre>
+  </div>
+</body>
+</html>
+  

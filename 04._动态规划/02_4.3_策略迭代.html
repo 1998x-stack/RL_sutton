@@ -1,0 +1,299 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <title>4.3 策略迭代</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Math&display=swap">
+  <link rel="stylesheet" href="../markdown.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="../markdown.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>02_4.3_策略迭代</h1>
+<pre><code>Lecture: /04._动态规划
+Content: 02_4.3_策略迭代
+</code></pre>
+<h3>4.3 策略迭代的详细分析</h3>
+<h4>策略迭代简介</h4>
+<p>策略迭代是一种动态规划方法，旨在通过不断优化策略来解决马尔可夫决策过程（MDP）中的最优控制问题。策略迭代由两个主要步骤组成：策略评估（Policy Evaluation）和策略改进（Policy Improvement）。这两个步骤交替进行，直到策略不再发生变化，从而找到最优策略。</p>
+<h4>策略迭代的步骤</h4>
+<ol>
+<li>
+<p><strong>策略评估</strong>：</p>
+<ul>
+<li><strong>目标</strong>：计算给定策略 $\pi$ 的状态值函数 $v_\pi$，即在策略 $\pi$ 下，从状态 $s$ 出发，直到终止状态所获得的期望回报。</li>
+<li><strong>贝尔曼方程</strong>：$$ v_\pi(s) = \sum_a \pi(a|s) \sum_{s',r} p(s',r|s,a) [r + \gamma v_\pi(s')] $$
+<ul>
+<li>$s$：当前状态</li>
+<li>$a$：动作</li>
+<li>$\pi(a|s)$：在状态 $s$ 下选择动作 $a$ 的概率</li>
+<li>$p(s',r|s,a)$：在状态 $s$ 下选择动作 $a$ 后转移到状态 $s'$ 并获得回报 $r$ 的概率</li>
+<li>$v_\pi(s')$：下一状态 $s'$ 的状态值</li>
+<li>$\gamma$：折扣因子，用于权衡即时回报和未来回报</li>
+</ul>
+</li>
+<li><strong>迭代求解</strong>：通常采用迭代方法求解贝尔曼方程，从任意初始值开始，通过反复更新状态值函数来逼近最终解。
+<ul>
+<li>初始化：对所有状态 $s$ 初始化 $v_\pi(s)$</li>
+<li>迭代更新：对于每个状态 $s$，根据贝尔曼方程更新 $v_\pi(s)$，直到收敛。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>策略改进</strong>：</p>
+<ul>
+<li><strong>目标</strong>：通过当前状态值函数 $v_\pi$ 改进策略 $\pi$。</li>
+<li><strong>策略改进方程</strong>：$$ \pi'(s) = \arg\max_a \sum_{s',r} p(s',r|s,a) [r + \gamma v_\pi(s')] $$
+<ul>
+<li>对于每个状态 $s$，选择使得期望回报最大的动作 $a$，即新的策略在每个状态下都不劣于旧策略。</li>
+</ul>
+</li>
+<li><strong>策略更新</strong>：将新策略 $\pi'$ 作为当前策略，重复策略评估和策略改进，直到策略不再发生变化（达到策略稳定）。</li>
+</ul>
+</li>
+<li>
+<p><strong>迭代过程</strong>：</p>
+<ul>
+<li>交替进行策略评估和策略改进，直到策略稳定，即策略不再变化。</li>
+<li>在有限步内收敛到最优策略，因为有限 MDP 中策略的数量是有限的。</li>
+</ul>
+</li>
+</ol>
+<h4>数学证明与收敛性</h4>
+<p>策略迭代的数学基础非常坚实，以下是其收敛性的详细分析：</p>
+<ol>
+<li>
+<p><strong>策略评估的收敛性</strong>：</p>
+<ul>
+<li><strong>收缩映射</strong>：每次更新 $v_\pi$ 的过程是收缩映射，即每次迭代都会使状态值函数更接近真实值。通过反复迭代，状态值函数将收敛到真实值函数。</li>
+<li><strong>迭代公式</strong>：在每次迭代中，更新状态值函数的公式为：
+$$ v_{k+1}(s) = \sum_a \pi(a|s) \sum_{s',r} p(s',r|s,a) [r + \gamma v_k(s')] $$
+其中，$v_k(s)$ 表示第 $k$ 次迭代时状态 $s$ 的状态值。</li>
+</ul>
+</li>
+<li>
+<p><strong>策略改进的改进性</strong>：</p>
+<ul>
+<li>每次策略改进都会产生一个新的、至少不比前一个差的策略。这一点可以通过比较新旧策略在每个状态下的价值函数来证明。</li>
+<li><strong>改进证明</strong>：假设当前策略为 $\pi$，改进后的策略为 $\pi'$，对于每个状态 $s$，有：
+$$ v_{\pi'}(s) \geq v_\pi(s) $$
+其中，$v_{\pi'}(s)$ 表示在策略 $\pi'$ 下状态 $s$ 的价值函数，$v_\pi(s)$ 表示在策略 $\pi$ 下状态 $s$ 的价值函数。</li>
+</ul>
+</li>
+<li>
+<p><strong>整体收敛性</strong>：</p>
+<ul>
+<li>由于策略的数量有限，策略迭代过程必然在有限步内收敛到最优策略。</li>
+<li><strong>最优策略</strong>：最终收敛到的策略即为最优策略，使得在每个状态下的期望回报最大。</li>
+</ul>
+</li>
+</ol>
+<h4>算法伪代码</h4>
+<p>下面是策略迭代算法的详细伪代码：</p>
+<pre><code class="language-python">def policy_iteration(states, actions, transition_probabilities, rewards, gamma, theta):
+    ```
+    策略迭代算法
+
+    参数:
+    - states: 状态集合
+    - actions: 动作集合
+    - transition_probabilities: 状态转移概率矩阵
+    - rewards: 奖励矩阵
+    - gamma: 折扣因子
+    - theta: 收敛阈值
+
+    返回:
+    - V: 状态值函数
+    - pi: 最优策略
+    ```
+    # 初始化
+    V = {s: 0 for s in states}
+    pi = {s: actions[0] for s in states}
+    
+    while True:
+        # 策略评估
+        while True:
+            delta = 0
+            for s in states:
+                v = V[s]
+                V[s] = sum([transition_probabilities[s, pi[s], s'] * (rewards[s, pi[s], s'] + gamma * V[s']) for s' in states])
+                delta = max(delta, abs(v - V[s]))
+            if delta &lt; theta:
+                break
+        
+        # 策略改进
+        policy_stable = True
+        for s in states:
+            old_action = pi[s]
+            pi[s] = max(actions, key=lambda a: sum([transition_probabilities[s, a, s'] * (rewards[s, a, s'] + gamma * V[s']) for s' in states]))
+            if old_action != pi[s]:
+                policy_stable = False
+        
+        if policy_stable:
+            return V, pi
+</code></pre>
+<h4>应用案例：Jack's Car Rental</h4>
+<p>Jack's Car Rental 是一个经典的策略迭代应用案例。Jack 管理两个租车点，每天有顾客来租车，如果租车点有车则能租出，否则生意就丢失。Jack 可以在夜间在两个租车点之间移动车辆，移动一辆车的成本是2美元。通过策略迭代，可以找到最优策略，使得收益最大化。</p>
+<ol>
+<li><strong>状态</strong>：两个租车点的车辆数量。</li>
+<li><strong>动作</strong>：在两个租车点之间移动车辆的数量。</li>
+<li><strong>策略评估</strong>：计算在当前策略下，每个状态的期望回报。</li>
+<li><strong>策略改进</strong>：根据当前状态值函数，改进策略，使得每个状态下的期望回报最大。</li>
+</ol>
+<h4>策略迭代的优缺点</h4>
+<p><strong>优点</strong>：</p>
+<ol>
+<li><strong>收敛性</strong>：策略迭代在有限 MDP 中具有良好的收敛性，能在有限步内找到最优策略。</li>
+<li><strong>理论基础</strong>：策略迭代有坚实的数学理论基础，能够保证策略的逐步改进。</li>
+<li><strong>应用广泛</strong>：策略迭代方法适用于各种动态规划问题，特别是在策略空间较小的情况下表现优异。</li>
+</ol>
+<p><strong>缺点</strong>：</p>
+<ol>
+<li><strong>计算复杂度</strong>：在状态空间和动作空间较大的情况下，策略迭代的计算复杂度较高，可能导致计算时间过长。</li>
+<li><strong>存储需求</strong>：需要存储每个状态的价值和策略，存储需求较大。</li>
+</ol>
+<h4>结论</h4>
+<p>策略迭代是动态规划中的一种强大方法，通过交替进行策略评估和策略改进，可以有效地找到最优策略。它不仅在理论上有坚实的数学基础，而且在实际应用中也展现了强大的解决复杂问题的能力。通过策略迭代，可以在有限步内保证收敛到最优策略，为决策提供最优解。</p>
+<h3>总结</h3>
+<p>策略迭代作为动态规划中的一种重要方法，通过策略评估和策略改进的交替进行，逐步逼近最优策略。其数学原理保证了算法的收敛性和有效性，在实际应用中广泛用于解决复杂的决策问题。虽然在大规模问题中存在计算复杂度和存储需求的挑战，但其强大的理论基础和实际效果使其成为求解 MDP 问题。</p>
+
+    <h3>Python 文件</h3>
+    <pre><code># 02_4.3_策略迭代
+
+"""
+Lecture: /04._动态规划
+Content: 02_4.3_策略迭代
+"""
+
+import numpy as np
+from typing import Dict, Tuple, List
+
+class PolicyIteration:
+    """
+    策略迭代类，包含用于求解马尔可夫决策过程（MDP）的策略迭代算法。
+
+    Attributes:
+        states: 状态集合
+        actions: 动作集合
+        transition_probabilities: 状态转移概率矩阵
+        rewards: 奖励矩阵
+        gamma: 折扣因子
+        theta: 收敛阈值
+    """
+
+    def __init__(self, states: List[int], actions: List[int],
+                 transition_probabilities: Dict[Tuple[int, int, int], float],
+                 rewards: Dict[Tuple[int, int, int], float], gamma: float, theta: float):
+        """
+        初始化策略迭代类。
+
+        参数:
+            states: 状态集合
+            actions: 动作集合
+            transition_probabilities: 状态转移概率矩阵
+            rewards: 奖励矩阵
+            gamma: 折扣因子
+            theta: 收敛阈值
+        """
+        self.states = states
+        self.actions = actions
+        self.transition_probabilities = transition_probabilities
+        self.rewards = rewards
+        self.gamma = gamma
+        self.theta = theta
+        self.value_function = {s: 0 for s in states}
+        self.policy = {s: actions[0] for s in states}
+
+    def policy_evaluation(self) -> None:
+        """
+        策略评估，通过迭代计算当前策略下的状态值函数，直到收敛。
+        """
+        while True:
+            delta = 0
+            for s in self.states:
+                v = self.value_function[s]
+                self.value_function[s] = sum([self.transition_probabilities[(s, self.policy[s], s_)] *
+                                              (self.rewards[(s, self.policy[s], s_)] +
+                                               self.gamma * self.value_function[s_])
+                                              for s_ in self.states])
+                delta = max(delta, abs(v - self.value_function[s]))
+            if delta < self.theta:
+                break
+
+    def policy_improvement(self) -> bool:
+        """
+        策略改进，根据当前的状态值函数改进策略。
+
+        返回:
+            bool: 如果策略稳定则返回 True，否则返回 False。
+        """
+        policy_stable = True
+        for s in self.states:
+            old_action = self.policy[s]
+            action_values = {a: sum([self.transition_probabilities[(s, a, s_)] *
+                                     (self.rewards[(s, a, s_)] + self.gamma * self.value_function[s_])
+                                     for s_ in self.states])
+                             for a in self.actions}
+            self.policy[s] = max(action_values, key=action_values.get)
+            if old_action != self.policy[s]:
+                policy_stable = False
+        return policy_stable
+
+    def policy_iteration(self) -> Tuple[Dict[int, float], Dict[int, int]]:
+        """
+        策略迭代，通过反复进行策略评估和策略改进，直到策略收敛。
+
+        返回:
+            Tuple[Dict[int, float], Dict[int, int]]: 最终的状态值函数和策略。
+        """
+        while True:
+            self.policy_evaluation()
+            if self.policy_improvement():
+                break
+        return self.value_function, self.policy
+
+# 测试代码
+if __name__ == "__main__":
+    # 定义状态、动作、转移概率和奖励
+    states = [0, 1, 2, 3]
+    actions = [0, 1]
+    transition_probabilities = {
+        (0, 0, 0): 0.7, (0, 0, 1): 0.3,
+        (0, 1, 0): 0.4, (0, 1, 1): 0.6,
+        (1, 0, 2): 0.8, (1, 0, 3): 0.2,
+        (1, 1, 2): 0.5, (1, 1, 3): 0.5,
+        (2, 0, 0): 0.9, (2, 0, 1): 0.1,
+        (2, 1, 0): 0.2, (2, 1, 1): 0.8,
+        (3, 0, 2): 0.6, (3, 0, 3): 0.4,
+        (3, 1, 2): 0.3, (3, 1, 3): 0.7,
+    }
+    rewards = {
+        (0, 0, 0): 5, (0, 0, 1): 10,
+        (0, 1, 0): 2, (0, 1, 1): 7,
+        (1, 0, 2): 15, (1, 0, 3): 20,
+        (1, 1, 2): 9, (1, 1, 3): 13,
+        (2, 0, 0): 6, (2, 0, 1): 8,
+        (2, 1, 0): 3, (2, 1, 1): 4,
+        (3, 0, 2): 12, (3, 0, 3): 18,
+        (3, 1, 2): 14, (3, 1, 3): 11,
+    }
+    gamma = 0.9
+    theta = 0.0001
+
+    pi = PolicyIteration(states, actions, transition_probabilities, rewards, gamma, theta)
+    value_function, policy = pi.policy_iteration()
+
+    print("最终状态值函数:", value_function)
+    print("最终策略:", policy)</code></pre>
+  </div>
+</body>
+</html>
+  

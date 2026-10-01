@@ -1,0 +1,197 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <title>2.7 上置信度界动作选择</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Math&display=swap">
+  <link rel="stylesheet" href="../markdown.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="../markdown.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>06_2.7_上置信度界动作选择</h1>
+<pre><code>Lecture: /02._表格解法方法
+Content: 06_2.7_上置信度界动作选择
+</code></pre>
+<h2>2.7 上置信度界动作选择</h2>
+<h3>引言</h3>
+<p>在强化学习中，上置信度界（Upper Confidence Bound, UCB）动作选择方法是一种有效平衡探索与利用的策略。它通过计算每个动作的置信度界限，选择具有最高上置信度界值的动作，从而在探索潜在优良动作的同时，尽可能利用当前的最佳动作。</p>
+<h3>上置信度界的定义</h3>
+<p>UCB 算法的核心思想是，为每个动作计算一个上置信度界值，并选择该值最大的动作。具体来说，对于每个动作 $a$，其 UCB 值 $UCB_t(a)$ 定义如下：</p>
+<p>$$ UCB_t(a) = Q_t(a) + c \sqrt{\frac{\ln t}{N_t(a)}} $$</p>
+<p>其中：</p>
+<ul>
+<li>$Q_t(a)$ 是动作 $a$ 在时间步 $t$ 的估计值。</li>
+<li>$c$ 是一个控制探索程度的常数。</li>
+<li>$t$ 是当前时间步。</li>
+<li>$N_t(a)$ 是动作 $a$ 被选择的次数。</li>
+</ul>
+<p>公式中的第二项 $c \sqrt{\frac{\ln t}{N_t(a)}}$ 表示对动作 $a$ 的不确定性估计，随着选择次数的增加，该值会逐渐减小。这确保了在早期阶段，算法会更多地探索那些不常被选择的动作，而在后期阶段，算法会更多地利用当前已知的最佳动作。</p>
+<h3>UCB 算法步骤</h3>
+<ol>
+<li><strong>初始化</strong>：对于每个动作 $a$，设定初始估计值 $Q_1(a)$ 和选择次数 $N_1(a)$。</li>
+<li><strong>动作选择</strong>：在每个时间步 $t$，计算每个动作的 UCB 值，并选择 UCB 值最大的动作。</li>
+<li><strong>执行动作并更新</strong>：执行选择的动作，观察奖励，并更新对应的估计值 $Q_t(a)$ 和选择次数 $N_t(a)$。</li>
+<li><strong>重复</strong>：重复步骤2和3，直到达到预定的时间步数。</li>
+</ol>
+<h3>实验与结果</h3>
+<p>为了验证 UCB 方法的有效性，可以在10臂强盗问题上进行实验。实验设置如下：</p>
+<ul>
+<li>动作的真实值从标准正态分布中随机生成。</li>
+<li>奖励值为真实值加上标准正态噪声。</li>
+<li>比较UCB方法、贪婪方法和ε-贪婪方法在1000个时间步内的表现。</li>
+</ul>
+<h4>实验结果分析</h4>
+<ol>
+<li><strong>平均奖励</strong>：实验结果显示，UCB 方法在长期表现上优于贪婪方法和ε-贪婪方法。由于UCB 方法在早期阶段更多地探索不同的动作，它能更快地找到最优动作，并在后期阶段更多地利用最优动作，从而获得更高的平均奖励。</li>
+<li><strong>最优动作的选择比例</strong>：UCB 方法在每个时间步选择最优动作的比例显著高于其他方法。这表明UCB 方法在平衡探索与利用方面更为有效。</li>
+</ol>
+<h3>结论</h3>
+<p>上置信度界动作选择方法通过计算每个动作的上置信度界值，有效地平衡了探索与利用。实验结果表明，UCB 方法在多臂强盗问题中表现优越，能够更快地找到并利用最优动作，获得更高的平均奖励。UCB 方法的这种优势使其在需要平衡探索与利用的强化学习问题中具有广泛的应用前景。</p>
+<p>通过引入UCB 方法，我们可以在复杂的强化学习环境中更有效地进行决策，提升算法的学习效率和最终性能。这为未来的研究和应用提供了重要的参考和借鉴。</p>
+<hr>
+<p>结合乐观初始值与上置信度界（UCB）方法，是一种增强探索与利用平衡的策略。下面详细讨论这种结合的效果及其在强化学习中的应用：</p>
+<h3>乐观初始值</h3>
+<p>乐观初始值方法通过为每个动作设定一个较高的初始估计值来鼓励探索。在早期阶段，由于初始值高，算法会尝试每个动作，以验证这些高估的初始值是否准确。这种方法简单且有效，尤其适用于多臂强盗问题及其他类似的强化学习环境。</p>
+<h3>上置信度界（UCB）方法</h3>
+<p>UCB 方法通过计算每个动作的上置信度界值，在每一步选择置信度界值最大的动作。UCB 公式中的置信度界限部分随着动作被选择次数的增加而减小，从而在早期阶段更多地探索不同动作，在后期阶段更多地利用已知的最优动作。</p>
+<h3>乐观初始值与UCB方法的结合</h3>
+<p>将乐观初始值与UCB方法结合起来，可以进一步增强算法在早期阶段的探索能力，同时在整个学习过程中保持平衡的探索与利用策略。具体实现如下：</p>
+<ol>
+<li><strong>初始化</strong>：为每个动作设置较高的初始估计值 $Q_0(a)$ 和选择次数 $N_0(a) = 0$。</li>
+<li><strong>计算UCB值</strong>：在每个时间步 $t$，计算每个动作的UCB值：
+$$ UCB_t(a) = Q_t(a) + c \sqrt{\frac{\ln t}{N_t(a)}} $$</li>
+<li><strong>选择动作</strong>：选择UCB值最大的动作。</li>
+<li><strong>执行动作并更新</strong>：执行选择的动作，观察奖励，并更新对应的估计值 $Q_t(a)$ 和选择次数 $N_t(a)$。</li>
+</ol>
+<h3>效果分析</h3>
+<h4>优势</h4>
+<ol>
+<li><strong>增强早期探索</strong>：乐观初始值的设定促使算法在早期阶段更多地尝试每个动作，避免过早地陷入局部最优解。</li>
+<li><strong>平衡长期探索与利用</strong>：UCB方法通过置信度界限有效地平衡了探索与利用，使得算法在长期内能够更好地找到并利用最优动作。</li>
+<li><strong>适应非平稳环境</strong>：在非平稳环境中，结合乐观初始值和UCB方法能够快速适应奖励分布的变化，保持高效的学习能力。</li>
+</ol>
+<h4>实验结果</h4>
+<p>结合乐观初始值和UCB方法的实验结果表明，这种方法在多臂强盗问题中表现优越。具体表现为：</p>
+<ol>
+<li><strong>更高的平均奖励</strong>：由于增强了早期探索和长期利用的平衡，算法在整个学习过程中获得更高的平均奖励。</li>
+<li><strong>更快的收敛速度</strong>：结合方法能够更快速地找到最优动作，并在后期阶段稳定利用最优动作，提高了收敛速度。</li>
+<li><strong>鲁棒性</strong>：在面对奖励分布频繁变化的非平稳环境时，结合方法表现出更强的鲁棒性，能够及时调整动作选择策略。</li>
+</ol>
+<h3>结论</h3>
+<p>将乐观初始值与上置信度界（UCB）方法结合，是一种在强化学习中增强探索与利用平衡的有效策略。实验结果表明，这种结合方法在多臂强盗问题及其他类似环境中具有显著的优势，包括更高的平均奖励、更快的收敛速度和更强的鲁棒性。未来的研究可以进一步优化这两种方法的结合策略，以适应更多复杂的强化学习问题。</p>
+
+    <h3>Python 文件</h3>
+    <pre><code># 06_2.7_上置信度界动作选择
+
+"""
+Lecture: /02._表格解法方法
+Content: 06_2.7_上置信度界动作选择
+"""
+
+import numpy as np
+import pandas as pd
+from typing import List, Tuple
+
+class UpperConfidenceBoundBandit:
+    """上置信度界(UCB)动作选择方法的实现类
+
+    Attributes:
+        num_arms: 动作数量，即拉杆数量
+        true_values: 各拉杆的真实奖励期望值
+        estimated_values: 各拉杆的估计奖励期望值
+        action_counts: 各拉杆的被选择次数
+        c: 控制探索程度的常数
+    """
+
+    def __init__(self, num_arms: int = 10, c: float = 2.0) -> None:
+        """
+        初始化上置信度界(UCB)动作选择方法实例
+        
+        Args:
+            num_arms: 动作数量，默认为10
+            c: 控制探索程度的常数，默认为2.0
+        """
+        self.num_arms = num_arms
+        self.c = c
+        self.true_values = np.random.randn(num_arms)  # 各拉杆的真实奖励期望值
+        self.estimated_values = np.zeros(num_arms)  # 各拉杆的估计奖励期望值
+        self.action_counts = np.zeros(num_arms)  # 各拉杆的被选择次数
+        self.total_steps = 0  # 总时间步数
+
+    def select_action(self) -> int:
+        """
+        根据UCB策略选择动作
+        
+        Returns:
+            选择的动作索引
+        """
+        self.total_steps += 1
+        ucb_values = self.estimated_values + self.c * np.sqrt(np.log(self.total_steps) / (self.action_counts + 1e-5))
+        return np.argmax(ucb_values)
+
+    def update_estimates(self, action: int, reward: float) -> None:
+        """
+        更新动作的估计值
+        
+        Args:
+            action: 动作索引
+            reward: 动作获得的奖励
+        """
+        self.action_counts[action] += 1
+        self.estimated_values[action] += (reward - self.estimated_values[action]) / self.action_counts[action]
+
+    def run(self, steps: int) -> List[Tuple[int, float]]:
+        """
+        运行上置信度界(UCB)动作选择方法
+        
+        Args:
+            steps: 运行的步数
+        
+        Returns:
+            每一步的动作和奖励
+        """
+        results = []
+        for _ in range(steps):
+            action = self.select_action()
+            reward = np.random.randn() + self.true_values[action]
+            self.update_estimates(action, reward)
+            results.append((action, reward))
+        return results
+
+def main():
+    """
+    主函数，执行上置信度界(UCB)动作选择方法并打印结果
+    """
+    num_arms = 10
+    steps = 1000
+    c = 2.0
+
+    bandit = UpperConfidenceBoundBandit(num_arms, c)
+    results = bandit.run(steps)
+
+    # 转换为DataFrame并打印结果
+    df = pd.DataFrame(results, columns=['Action', 'Reward'])
+    print(df.describe())
+
+    print(f"真实值: {bandit.true_values}")
+    print(f"估计值: {bandit.estimated_values}")
+    print(f"选择次数: {bandit.action_counts}")
+
+    return df
+
+# Run the main function and save results
+df_results = main()
+df_results.to_csv("dataset/ucb_bandit_results.csv", index=False)
+</code></pre>
+  </div>
+</body>
+</html>
+  

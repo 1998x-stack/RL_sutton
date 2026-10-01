@@ -1,0 +1,113 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <title>5.1 蒙特卡罗预测</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Math&display=swap">
+  <link rel="stylesheet" href="../markdown.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="../markdown.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>00_5.1_蒙特卡罗预测</h1>
+<pre><code>Lecture: /05._蒙特卡罗方法
+Content: 00_5.1_蒙特卡罗预测
+</code></pre>
+<h3>00_5.1 蒙特卡罗预测</h3>
+<h4>蒙特卡罗预测简介</h4>
+<p>蒙特卡罗方法（Monte Carlo Methods）是一种基于随机采样的计算方法，用于求解强化学习中的预测和控制问题。蒙特卡罗方法通过对从环境中采样得到的状态、动作和奖励序列进行平均来估计状态值函数和动作值函数。</p>
+<h4>蒙特卡罗预测的核心概念</h4>
+<ol>
+<li>
+<p><strong>第一遍访问蒙特卡罗（First-Visit MC）</strong>：</p>
+<ul>
+<li>第一遍访问蒙特卡罗方法估计策略 $\pi$ 下状态 $s$ 的值函数 $v_\pi(s)$，方法是对首次访问状态 $s$ 后的回报进行平均。</li>
+<li>具体步骤：
+<ol>
+<li>初始化：对所有状态的值函数 $V(s)$ 初始化为任意值，并创建空的回报列表。</li>
+<li>生成一个遵循策略 $\pi$ 的完整序列（episode）。</li>
+<li>对序列中的每一步进行回溯，计算累计回报 $G$，并更新状态值函数。</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>每次访问蒙特卡罗（Every-Visit MC）</strong>：</p>
+<ul>
+<li>每次访问蒙特卡罗方法估计策略 $\pi$ 下状态 $s$ 的值函数 $v_\pi(s)$，方法是对所有访问状态 $s$ 后的回报进行平均。</li>
+<li>具体步骤与第一遍访问蒙特卡罗类似，但不区分首次访问和再次访问。</li>
+</ul>
+</li>
+<li>
+<p><strong>收敛性</strong>：</p>
+<ul>
+<li>第一遍访问和每次访问蒙特卡罗方法都能收敛到 $v_\pi(s)$，随着访问次数趋于无穷大，估计值会收敛到真实值。</li>
+<li>每次访问蒙特卡罗方法的估计收敛速度更快，但实现起来更复杂。</li>
+</ul>
+</li>
+</ol>
+<h4>蒙特卡罗方法的步骤</h4>
+<ol>
+<li>
+<p><strong>策略评估</strong>：</p>
+<ul>
+<li>策略评估的目标是计算一个给定策略 $\pi$ 的状态值函数 $v_\pi$，即在遵循策略 $\pi$ 的情况下，从某个状态开始的预期总回报。</li>
+<li>蒙特卡罗方法通过对每个状态的回报进行平均来估计值函数，而不是通过动态规划的贝尔曼方程递归计算。</li>
+</ul>
+</li>
+<li>
+<p><strong>策略改进</strong>：</p>
+<ul>
+<li>在策略评估的基础上，利用新的状态值函数改进策略，使其在每个状态选择使期望回报最大的动作。</li>
+</ul>
+</li>
+<li>
+<p><strong>策略控制</strong>：</p>
+<ul>
+<li>蒙特卡罗控制结合了策略评估和策略改进，通过反复迭代这两个过程，直到找到最优策略。</li>
+</ul>
+</li>
+</ol>
+<h4>蒙特卡罗方法的应用案例</h4>
+<p><strong>示例 5.1: 二十一点（Blackjack）</strong>：</p>
+<ul>
+<li>在二十一点游戏中，玩家的目标是在不超过21点的情况下，尽量接近21点。</li>
+<li>蒙特卡罗方法可以用于估计玩家在不同策略下的状态值函数。例如，假设一个策略是玩家在手牌总数为20或21时停牌，否则继续要牌。通过模拟大量的二十一点游戏，可以计算出在该策略下各个状态的期望回报。</li>
+</ul>
+<h4>蒙特卡罗方法的优缺点</h4>
+<p><strong>优点</strong>：</p>
+<ol>
+<li><strong>不需要模型</strong>：蒙特卡罗方法只需要从环境中采样得到的序列数据，不需要对环境的完全了解。</li>
+<li><strong>简单易行</strong>：通过对回报的简单平均来估计值函数，理论上简单易行。</li>
+<li><strong>适用于大规模问题</strong>：特别适合用于估计特定状态的值函数，而不需要计算所有状态的值函数。</li>
+</ol>
+<p><strong>缺点</strong>：</p>
+<ol>
+<li><strong>高方差</strong>：蒙特卡罗方法的估计具有高方差，收敛速度可能较慢。</li>
+<li><strong>不适用于非周期性任务</strong>：蒙特卡罗方法仅适用于具有终止状态的周期性任务，不适用于非周期性任务。</li>
+</ol>
+<h4>结论</h4>
+<p>蒙特卡罗方法作为强化学习中的一种重要方法，通过对从环境中采样得到的序列数据进行平均，能够有效地估计状态值函数和动作值函数。其无需环境模型、适用于大规模问题的特点，使其在实践中具有广泛的应用前景。通过结合策略评估和策略改进，蒙特卡罗方法能够逐步逼近最优策略，解决复杂的决策问题。</p>
+<h3>总结</h3>
+<p>蒙特卡罗方法通过对采样数据的平均来估计状态值和动作值，适用于不完全了解环境的情况。第一遍访问和每次访问蒙特卡罗方法都能收敛到真实值，尽管每次访问方法的实现更复杂但收敛更快。应用案例如二十一点游戏展示了其在实际问题中的有效性。总的来说，蒙特卡罗方法在解决强化学习问题中具有重要作用和广泛应用前景。</p>
+
+    <h3>Python 文件</h3>
+    <pre><code># 00_5.1_蒙特卡罗预测
+
+"""
+Lecture: /05._蒙特卡罗方法
+Content: 00_5.1_蒙特卡罗预测
+"""
+
+</code></pre>
+  </div>
+</body>
+</html>
+  

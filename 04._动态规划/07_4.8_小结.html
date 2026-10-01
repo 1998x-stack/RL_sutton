@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <title>4.8 小结</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Math&display=swap">
+  <link rel="stylesheet" href="../markdown.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="../markdown.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>07_4.8_小结</h1>
+<pre><code>Lecture: /04._动态规划
+Content: 07_4.8_小结
+</code></pre>
+<h3>07_4.8 动态规划小结</h3>
+<h4>动态规划的核心概念回顾</h4>
+<ol>
+<li>
+<p><strong>策略评估（Policy Evaluation）</strong>：</p>
+<ul>
+<li>策略评估是计算给定策略的状态值函数 $v_\pi$ 的过程。通过贝尔曼期望方程递推计算：
+$$
+v_\pi(s) = \sum_{a} \pi(a|s) \sum_{s', r} p(s', r|s, a) [r + \gamma v_\pi(s')]
+$$</li>
+<li>反复迭代，直到值函数收敛。</li>
+</ul>
+</li>
+<li>
+<p><strong>策略改进（Policy Improvement）</strong>：</p>
+<ul>
+<li>策略改进是基于当前的值函数 $v_\pi$ 改进策略，使其变得贪心。通过贝尔曼最优方程进行策略改进：
+$$
+\pi'(s) = \arg\max_a \sum_{s', r} p(s', r|s, a) [r + \gamma v_\pi(s')]
+$$</li>
+</ul>
+</li>
+<li>
+<p><strong>策略迭代（Policy Iteration）</strong>：</p>
+<ul>
+<li>策略迭代是交替进行策略评估和策略改进的过程，直到策略收敛到最优策略。</li>
+<li>每次策略改进后，需要重新评估新的策略，直到策略不再变化。</li>
+</ul>
+</li>
+<li>
+<p><strong>值迭代（Value Iteration）</strong>：</p>
+<ul>
+<li>值迭代是通过更新状态值函数来直接逼近最优值函数 $v_*$，然后通过贪心策略提取最优策略。</li>
+<li>值迭代结合了策略评估和策略改进的步骤，每次更新状态值函数后，通过最大化操作来更新策略。</li>
+</ul>
+</li>
+<li>
+<p><strong>异步动态规划（Asynchronous Dynamic Programming）</strong>：</p>
+<ul>
+<li>异步动态规划是指不按固定顺序更新状态值的动态规划方法，可以选择性地更新部分状态值，提高计算效率。</li>
+<li>这种方法特别适用于大规模状态空间的问题，可以更快地找到接近最优的策略。</li>
+</ul>
+</li>
+<li>
+<p><strong>广义策略迭代（Generalized Policy Iteration, GPI）</strong>：</p>
+<ul>
+<li>GPI 是策略评估和策略改进交替进行的一般框架，通过反复迭代这两个过程，最终收敛到最优策略和最优值函数。</li>
+<li>GPI 的收敛性基于策略改进定理，保证每次策略改进都会产生一个不劣于当前策略的新策略。</li>
+</ul>
+</li>
+</ol>
+<h4>动态规划的效率</h4>
+<ol>
+<li>
+<p><strong>多项式时间复杂度</strong>：</p>
+<ul>
+<li>DP 方法找到最优策略的时间复杂度在状态和动作数量上是多项式级别的。与其他方法相比，DP 方法实际上是非常高效的。</li>
+</ul>
+</li>
+<li>
+<p><strong>指数级加速</strong>：</p>
+<ul>
+<li>DP 方法在找到最优策略方面比直接在策略空间中搜索要快得多。线性规划方法在某些情况下可能收敛更快，但当状态数量较大时，DP 方法更实用。</li>
+</ul>
+</li>
+<li>
+<p><strong>维数诅咒</strong>：</p>
+<ul>
+<li>大状态集确实会带来困难，但这是问题本身的固有困难，而不是DP方法的缺陷。与其他方法相比，DP 更适合处理大状态空间。</li>
+</ul>
+</li>
+</ol>
+<h4>动态规划的实际应用</h4>
+<ol>
+<li>
+<p><strong>大规模MDP的解决</strong>：</p>
+<ul>
+<li>在实际应用中，DP方法可以用来解决具有数百万状态的MDP。策略迭代和值迭代通常比理论上的最坏情况运行时间快得多。</li>
+</ul>
+</li>
+<li>
+<p><strong>异步方法的优势</strong>：</p>
+<ul>
+<li>在大规模状态空间中，异步DP方法更为实用。通过选择性地更新状态值，可以显著提高计算效率。</li>
+</ul>
+</li>
+</ol>
+<h4>动态规划的优缺点</h4>
+<p><strong>优点</strong>：</p>
+<ol>
+<li><strong>处理大规模状态空间</strong>：DP方法可以高效地处理大规模状态空间的问题。</li>
+<li><strong>多项式时间复杂度</strong>：DP方法在找到最优策略方面比直接在策略空间中搜索要快得多。</li>
+<li><strong>适用广泛</strong>：DP方法适用于多种MDP问题。</li>
+</ol>
+<p><strong>缺点</strong>：</p>
+<ol>
+<li><strong>实现复杂</strong>：DP方法在实现上可能比简单的搜索方法复杂。</li>
+<li><strong>维数诅咒</strong>：尽管DP方法相对其他方法更好地处理了大状态空间，但大状态集仍然会带来计算上的困难。</li>
+</ol>
+<h4>总结</h4>
+<p>动态规划是强化学习中的一种重要方法，通过选择性地更新状态值和策略，可以有效地处理大规模状态空间的问题。其多项式时间复杂度和广泛的适用范围使其成为解决复杂决策问题的理想选择。通过理解和应用动态规划的基本原理，可以更好地设计和实现高效的强化学习算法。</p>
+
+    <h3>Python 文件</h3>
+    <pre><code># 07_4.8_小结
+
+"""
+Lecture: /04._动态规划
+Content: 07_4.8_小结
+"""
+
+</code></pre>
+  </div>
+</body>
+</html>
+  

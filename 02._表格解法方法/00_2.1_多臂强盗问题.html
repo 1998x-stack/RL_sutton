@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <title>2.1 多臂强盗问题</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Math&display=swap">
+  <link rel="stylesheet" href="../markdown.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="../markdown.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>00_2.1_多臂强盗问题</h1>
+<pre><code>Lecture: /02._表格解法方法
+Content: 00_2.1_多臂强盗问题
+</code></pre>
+<h2>2.1 多臂强盗问题</h2>
+<h3>1. 引言</h3>
+<p>多臂强盗问题（Multi-armed Bandit Problem）是强化学习中的经典问题之一，因其简洁性和对探索-利用（exploration-exploitation）平衡的清晰展示而被广泛研究。多臂强盗问题得名于赌博机（slot machine），又称“单臂强盗”（one-armed bandit），只不过这里有 $k$ 个拉杆（actions），每次拉动一个拉杆可以获得一个从对应的概率分布中抽取的数值奖励（reward）。</p>
+<h3>2. 问题定义</h3>
+<h4>2.1.1 问题描述</h4>
+<p>设想你面临 $k$ 个不同选项或动作（actions）的选择，每次选择一个动作后，你会收到一个数值奖励，该奖励从一个与所选动作相关的固定概率分布中抽取。你的目标是在一段时间内（例如1000次动作选择）最大化总期望奖励。</p>
+<h4>2.1.2 动作和奖励</h4>
+<p>在 $k$ 臂强盗问题中，每个动作 $a$ 都有一个期望奖励（mean reward），记为 $q^<em>(a)$。我们用 $A_t$ 表示在时间步 $t$ 选择的动作，用 $R_t$ 表示对应的奖励。那么，动作 $a$ 的价值 $q^</em>(a)$ 表示为：
+$$ q^*(a) = \mathbb{E}[R_t | A_t = a] $$</p>
+<h3>3. 贪婪选择与探索</h3>
+<h4>3.1 估计动作价值</h4>
+<p>如果我们知道每个动作的真实价值 $q^*(a)$，问题就很简单：总是选择价值最高的动作即可。然而，实际情况是我们并不知道这些价值，因此需要通过估计来逼近它们。我们用 $Q_t(a)$ 表示在时间步 $t$ 对动作 $a$ 的价值估计。</p>
+<h4>3.2 贪婪选择</h4>
+<p>贪婪选择是指总是选择当前估计价值最高的动作。具体来说，如果在时间步 $t$ 动作 $a$ 的估计价值为 $Q_t(a)$，则贪婪选择动作 $A_t$ 的规则是：
+$$ A_t = \arg\max_a Q_t(a) $$</p>
+<h4>3.3 探索与利用</h4>
+<ul>
+<li><strong>利用（Exploitation）</strong>：选择当前估计价值最高的动作，以最大化即时奖励。</li>
+<li><strong>探索（Exploration）</strong>：选择非贪婪动作，以获取更多信息，可能提高长期奖励。</li>
+</ul>
+<p>为了在探索和利用之间取得平衡，常用的策略是 $\epsilon$-贪婪方法，即以概率 $1-\epsilon$ 选择当前估计价值最高的动作，以概率 $\epsilon$ 随机选择一个动作。</p>
+<h3>4. 例子与实验</h3>
+<h4>4.1 10 臂测试平台</h4>
+<p>为了评估贪婪方法和 $\epsilon$-贪婪方法的相对效果，我们使用了一个包含2000个随机生成的10臂强盗问题的测试平台。每个问题中的动作价值 $q^<em>(a)$ 是从均值为0、方差为1的正态分布中抽取的，奖励 $R_t$ 则从均值为 $q^</em>(a)$、方差为1的正态分布中抽取。图2.1展示了其中一个问题的奖励分布。</p>
+<h4>4.2 实验结果</h4>
+<p>图2.2对比了贪婪方法与两个 $\epsilon$-贪婪方法（$\epsilon=0.01$ 和 $\epsilon=0.1$）在10臂测试平台上的表现。结果表明，贪婪方法在初期略快于 $\epsilon$-贪婪方法，但长期表现较差，因为它常常陷入次优选择。相反，$\epsilon$-贪婪方法在长期表现更好，随着时间推移，选择最优动作的概率接近于 $1-\epsilon$。</p>
+<h3>5. 结论</h3>
+<p>多臂强盗问题展示了强化学习中的一个核心挑战：在探索和利用之间取得平衡。通过在一个简化的环境中研究这一问题，我们能够更清楚地理解评估性反馈（evaluative feedback）与指示性反馈（instructive feedback）的区别和结合方式。该问题的简单版本帮助我们介绍了一些基本的学习方法，这些方法在后续章节中被扩展应用到完整的强化学习问题中。</p>
+<h3>6. 小结</h3>
+<ul>
+<li><strong>定义</strong>：多臂强盗问题涉及在 $k$ 个动作中选择一个以最大化长期奖励。</li>
+<li><strong>贪婪选择</strong>：总是选择当前估计价值最高的动作。</li>
+<li><strong>探索与利用</strong>：$\epsilon$-贪婪方法通过随机选择非贪婪动作来探索，平衡即时奖励和长期奖励。</li>
+<li><strong>实验结果</strong>：$\epsilon$-贪婪方法在长期表现优于纯贪婪方法。</li>
+<li><strong>应用</strong>：多臂强盗问题在统计学、工程学和心理学中都有广泛研究，是强化学习的重要组成部分。</li>
+</ul>
+<p>通过对多臂强盗问题的深入分析，我们可以更好地理解和设计在复杂环境中有效的学习算法。</p>
+
+    <h3>Python 文件</h3>
+    <pre><code># 00_2.1_多臂强盗问题
+
+"""
+Lecture: /02._表格解法方法
+Content: 00_2.1_多臂强盗问题
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+from typing import List
+
+class MultiArmedBandit:
+    """多臂强盗问题的实现类
+
+    Attributes:
+        num_arms: 拉杆数量
+        true_values: 各拉杆的真实奖励期望值
+        estimated_values: 各拉杆的估计奖励期望值
+        action_counts: 各拉杆的被选择次数
+        epsilon: 探索概率
+    """
+
+    def __init__(self, num_arms: int, epsilon: float = 0.1) -> None:
+        """
+        初始化多臂强盗问题实例
+        
+        Args:
+            num_arms: 拉杆数量
+            epsilon: 探索概率，默认为0.1
+        """
+        self.num_arms = num_arms
+        self.epsilon = epsilon
+        self.true_values = np.random.randn(num_arms)  # 各拉杆的真实奖励期望值
+        self.estimated_values = np.zeros(num_arms)  # 各拉杆的估计奖励期望值
+        self.action_counts = np.zeros(num_arms)  # 各拉杆的被选择次数
+
+    def select_action(self) -> int:
+        """
+        根据ε-贪婪策略选择动作
+        
+        Returns:
+            选择的动作索引
+        """
+        if np.random.rand() < self.epsilon:
+            return np.random.randint(self.num_arms)  # 随机选择动作
+        else:
+            return np.argmax(self.estimated_values)  # 选择估计值最大的动作
+
+    def update_estimates(self, action: int, reward: float) -> None:
+        """
+        更新动作的估计值
+        
+        Args:
+            action: 动作索引
+            reward: 动作获得的奖励
+        """
+        self.action_counts[action] += 1
+        self.estimated_values[action] += (reward - self.estimated_values[action]) / self.action_counts[action]
+
+    def run(self, steps: int) -> List[float]:
+        """
+        运行多臂强盗算法
+        
+        Args:
+            steps: 运行的步数
+        
+        Returns:
+            每一步的奖励
+        """
+        rewards = []
+        for _ in range(steps):
+            action = self.select_action()
+            reward = np.random.randn() + self.true_values[action]
+            self.update_estimates(action, reward)
+            rewards.append(reward)
+        return rewards
+
+def main():
+    """
+    主函数，执行多臂强盗算法并打印结果
+    """
+    num_arms = 10
+    steps = 1000
+    epsilon = 0.1
+
+    bandit = MultiArmedBandit(num_arms, epsilon)
+    rewards = bandit.run(steps)
+
+    print(f"真实值: {bandit.true_values}")
+    print(f"估计值: {bandit.estimated_values}")
+    print(f"选择次数: {bandit.action_counts}")
+    print(f"总奖励: {np.sum(rewards)}")
+    print(f"平均奖励: {np.mean(rewards)}")
+
+    # 可视化结果
+    plt.figure(figsize=(12, 8))
+    plt.plot(rewards)
+    plt.xlabel('步骤')
+    plt.ylabel('奖励')
+    plt.title('多臂强盗问题奖励变化')
+    plt.show()
+
+if __name__ == "__main__":
+    main()</code></pre>
+  </div>
+</body>
+</html>
+  

@@ -1,0 +1,68 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <title>4.1 策略评估（预测）</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Math&display=swap">
+  <link rel="stylesheet" href="../markdown.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="../markdown.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>00_4.1_策略评估（预测）</h1>
+<pre><code>Lecture: /04._动态规划
+Content: 00_4.1_策略评估（预测）
+</code></pre>
+<h3>4.1 策略评估（预测）</h3>
+<h4>概述</h4>
+<p>策略评估（Policy Evaluation）是动态规划（Dynamic Programming, DP）中的基本问题之一，旨在计算给定策略 $\pi$ 下的状态值函数 $v_\pi$。在强化学习的背景下，策略评估也称为预测问题。这一过程的目标是对状态值进行估计，以便评估策略的效果。</p>
+<h4>状态值函数的定义</h4>
+<p>状态值函数 $v_\pi(s)$ 表示在给定策略 $\pi$ 下，从状态 $s$ 开始，期望获得的累积奖励。其数学定义为：</p>
+<p>$$ v_\pi(s) = \mathbb{E}_\pi [G_t | S_t = s] $$</p>
+<p>根据贝尔曼期望方程（Bellman Expectation Equation），我们可以将其展开为：</p>
+<p>$$ v_\pi(s) = \mathbb{E}<em t+1="">\pi [R</em> + \gamma v_\pi(S_{t+1}) | S_t = s] $$</p>
+<h4>贝尔曼方程</h4>
+<p>贝尔曼方程为我们提供了一种递归计算值函数的方法。具体而言，对于给定策略 $\pi$，贝尔曼方程可以表示为：</p>
+<p>$$ v_\pi(s) = \sum_a \pi(a|s) \sum_{s',r} p(s', r | s, a) [r + \gamma v_\pi(s')] $$</p>
+<p>其中：</p>
+<ul>
+<li>$\pi(a|s)$ 表示在状态 $s$ 下选择动作 $a$ 的概率。</li>
+<li>$p(s', r | s, a)$ 表示在状态 $s$ 下执行动作 $a$ 后转移到状态 $s'$ 并获得奖励 $r$ 的概率。</li>
+</ul>
+<p>这个方程描述了当前状态值与后续状态值之间的关系。通过反复应用贝尔曼方程，可以逐步逼近真实的状态值函数。</p>
+<h4>迭代策略评估</h4>
+<p>在实际应用中，我们通常使用迭代策略评估方法来求解贝尔曼方程。这一方法的基本思路是从初始的近似值函数 $v_0$ 开始，逐步更新，直到收敛到真实的状态值函数 $v_\pi$。具体步骤如下：</p>
+<ol>
+<li>初始化 $v_0(s)$ 为任意值（通常为0），对于终止状态，其值设为0。</li>
+<li>对于每个状态 $s$，更新值函数：
+$$ v_{k+1}(s) = \sum_a \pi(a|s) \sum_{s',r} p(s', r | s, a) [r + \gamma v_k(s')] $$</li>
+<li>重复步骤2，直到值函数的变化量小于预设阈值。</li>
+</ol>
+<p>这种方法通过不断更新状态值，逐步逼近真实的值函数。这一过程中，每次更新都利用了策略 $\pi$ 下可能的所有状态转移和奖励信息。</p>
+<h4>收敛性</h4>
+<p>迭代策略评估方法在满足一定条件下是收敛的。只要折扣因子 $\gamma &lt; 1$ 或者策略 $\pi$ 能够保证从所有状态最终达到终止状态，值函数的序列 $v_k$ 将收敛到 $v_\pi$。</p>
+<h4>示例</h4>
+<p>假设有一个4×4的网格世界，其中每个状态可以选择上下左右四个动作，每个动作都会导致状态的确定性转移，所有转移的即时奖励为-1。在这种情况下，我们可以使用迭代策略评估方法计算每个状态的值函数。通过不断迭代更新，我们最终可以得到每个状态的值，从而评估当前策略的效果。</p>
+<h3>总结</h3>
+<p>策略评估是强化学习中重要的一步，通过计算给定策略下的状态值函数，我们可以评估策略的效果，并为进一步的策略改进和优化提供基础。迭代策略评估方法提供了一种有效的计算手段，通过不断迭代更新值函数，逐步逼近真实的状态值。在后续章节中，我们将探讨如何基于策略评估结果进行策略改进，从而找到最优策略。</p>
+
+    <h3>Python 文件</h3>
+    <pre><code># 00_4.1_策略评估（预测）
+
+"""
+Lecture: /04._动态规划
+Content: 00_4.1_策略评估（预测）
+"""
+
+</code></pre>
+  </div>
+</body>
+</html>
+  

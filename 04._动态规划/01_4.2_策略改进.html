@@ -1,0 +1,74 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <title>4.2 策略改进</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Math&display=swap">
+  <link rel="stylesheet" href="../markdown.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="../markdown.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>01_4.2_策略改进</h1>
+<pre><code>Lecture: /04._动态规划
+Content: 01_4.2_策略改进
+</code></pre>
+<h3>4.2 策略改进</h3>
+<h4>概述</h4>
+<p>策略改进（Policy Improvement）是动态规划中一个关键步骤，用于提升当前策略的性能。通过对当前策略进行评估和改进，我们可以逐步接近最优策略。本节将详细讨论策略改进的理论基础和实现方法。</p>
+<h4>策略改进定理</h4>
+<p>策略改进定理（Policy Improvement Theorem）是策略改进过程的理论基础。该定理表明，若对于所有状态 $s \in S$，有：</p>
+<p>$$ q_\pi(s, \pi'(s)) \ge v_\pi(s) $$</p>
+<p>其中 $ \pi'(s) $ 是在状态 $s$ 下采取的新动作，$ q_\pi(s, a) $ 是在当前策略 $ \pi $ 下从状态 $ s $ 开始采取动作 $ a $ 后的期望累积奖励。那么，新策略 $ \pi' $ 至少与旧策略 $ \pi $ 同样好，即：</p>
+<p>$$ v_{\pi'}(s) \ge v_\pi(s) $$</p>
+<p>如果对于某些状态 $ s $，不等式严格成立，即 $ q_\pi(s, \pi'(s)) &gt; v_\pi(s) $，则新策略 $ \pi' $ 严格优于旧策略 $ \pi $。</p>
+<h4>策略改进过程</h4>
+<p>策略改进的基本思想是基于当前策略的值函数，通过选择使值函数最大的动作来生成新策略。具体步骤如下：</p>
+<ol>
+<li><strong>计算当前策略的状态值函数</strong>：使用策略评估方法，计算当前策略 $ \pi $ 的状态值函数 $ v_\pi(s) $。</li>
+<li><strong>改进策略</strong>：对于每个状态 $ s $，选择使得动作值函数 $ q_\pi(s, a) $ 最大的动作 $ a $ 作为新策略中的动作。即：
+$$ \pi'(s) = \arg\max_a q_\pi(s, a) = \arg\max_a \mathbb{E}[R_{t+1} + \gamma v_\pi(S_{t+1}) | S_t = s, A_t = a] $$</li>
+</ol>
+<h4>策略迭代</h4>
+<p>策略迭代（Policy Iteration）是结合策略评估和策略改进的过程，旨在找到最优策略。其基本步骤如下：</p>
+<ol>
+<li><strong>初始化策略</strong>：选择一个初始策略 $ \pi_0 $。</li>
+<li><strong>策略评估</strong>：计算当前策略 $ \pi_k $ 的状态值函数 $ v_{\pi_k} $。</li>
+<li><strong>策略改进</strong>：基于当前策略的值函数生成新策略 $ \pi_{k+1} $：
+$$ \pi_{k+1}(s) = \arg\max_a \mathbb{E}[R_{t+1} + \gamma v_{\pi_k}(S_{t+1}) | S_t = s, A_t = a] $$</li>
+<li><strong>重复步骤2和3</strong>，直到策略不再发生变化，即找到最优策略。</li>
+</ol>
+<h4>策略改进的收敛性</h4>
+<p>策略迭代方法在有限马尔可夫决策过程中是收敛的。由于有限马尔可夫决策过程只有有限个策略，策略迭代过程将在有限步内收敛到最优策略和最优值函数。</p>
+<h4>示例</h4>
+<p>以经典的Jack的汽车租赁问题为例：</p>
+<ol>
+<li><strong>初始化策略</strong>：假设初始策略是不移动汽车。</li>
+<li><strong>策略评估</strong>：计算在该策略下各状态的值函数。</li>
+<li><strong>策略改进</strong>：基于计算得到的值函数，改进策略以增加利润。</li>
+<li><strong>重复步骤2和3</strong>，直到策略收敛。</li>
+</ol>
+<p>通过这种方法，最终可以找到在各种状态下最优的汽车移动策略，使得公司利润最大化。</p>
+<h3>总结</h3>
+<p>策略改进是动态规划中的核心步骤，通过不断评估和改进当前策略，逐步接近最优策略。策略改进定理提供了理论保障，而策略迭代方法则提供了实际操作步骤。在解决实际问题时，理解和应用这些方法，可以有效地提高决策过程的效率和效果。</p>
+
+    <h3>Python 文件</h3>
+    <pre><code># 01_4.2_策略改进
+
+"""
+Lecture: /04._动态规划
+Content: 01_4.2_策略改进
+"""
+
+</code></pre>
+  </div>
+</body>
+</html>
+  

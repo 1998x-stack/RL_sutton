@@ -1,0 +1,216 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <title>5.8 贴现意识的重要性采样</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Math&display=swap">
+  <link rel="stylesheet" href="../markdown.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="../markdown.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>07_5.8_贴现意识的重要性采样</h1>
+<pre><code>Lecture: /05._蒙特卡罗方法
+Content: 07_5.8_贴现意识的重要性采样
+</code></pre>
+<h3>07_5.8 贴现意识的重要性采样</h3>
+<h4>贴现意识的重要性采样简介</h4>
+<p>贴现意识的重要性采样（Discounting-aware Importance Sampling）是一种先进的研究方法，用于减少离策略估计器的方差。在之前讨论的离策略方法中，返回值被视为整体进行重要性采样，而没有考虑返回值作为贴现奖励和的内部结构。贴现意识的重要性采样则利用这一结构，通过部分终止的思想，显著减少了方差。</p>
+<h4>关键概念</h4>
+<ol>
+<li>
+<p><strong>重要性采样比率</strong>：</p>
+<ul>
+<li>在传统的重要性采样中，返回值被整个比例缩放，这可能导致非常高的方差，尤其是在序列较长时。例如，假设一个序列有100步，且贴现因子 $\gamma = 0$，返回值 $G_0 = R_1$ 的重要性采样比率将是100个比率的乘积：
+$$
+\prod_{t=0}^{99} \frac{\pi(A_t|S_t)}{b(A_t|S_t)}
+$$
+而实际上，只需对第一个因子进行缩放，因为后续的因子独立于返回值，并且期望值为1。</li>
+</ul>
+</li>
+<li>
+<p><strong>部分终止和平坦部分返回值</strong>：</p>
+<ul>
+<li>贴现意识的重要性采样通过将贴现视为部分终止的概率，从而重新定义返回值。例如，对于任意 $\gamma \in [0, 1)$，可以将返回值 $G_0$ 视为部分终止于一步、两步或更多步。部分返回值被定义为：
+$$
+\bar{G}<em t+1="">{t:h} = R</em> + R_{t+2} + \cdots + R_h
+$$
+其中“平坦”表示没有贴现，“部分”表示返回值并未延续到终止，而是止于某个时间点 $h$。</li>
+</ul>
+</li>
+<li>
+<p><strong>平坦返回值的和</strong>：</p>
+<ul>
+<li>传统的完整返回值 $G_t$ 可以视为平坦部分返回值的和：
+$$
+G_t = (1 - \gamma)R_{t+1} + (1 - \gamma)\gamma (R_{t+1} + R_{t+2}) + \cdots
+$$
+这种方法将返回值拆分成多个部分，每个部分对应一个不同的终止概率，从而减少了每一步的方差。</li>
+</ul>
+</li>
+</ol>
+<h4>算法步骤</h4>
+<ol>
+<li>
+<p><strong>初始化</strong>：</p>
+<ul>
+<li>初始化动作值函数 $Q(s, a)$ 和累计权重 $C(s, a)$。</li>
+<li>初始策略为贪心策略，根据 $Q(s, a)$ 选择动作。</li>
+</ul>
+</li>
+<li>
+<p><strong>生成序列</strong>：</p>
+<ul>
+<li>使用行为策略生成一个完整的序列，记录状态、动作和相应的奖励。</li>
+</ul>
+</li>
+<li>
+<p><strong>计算重要性采样比率</strong>：</p>
+<ul>
+<li>对于每个状态-动作对，计算重要性采样比率 $W$，用于调整回报。</li>
+</ul>
+</li>
+<li>
+<p><strong>更新动作值函数</strong>：</p>
+<ul>
+<li>根据重要性采样比率和回报，使用加权重要性采样的方法更新动作值函数。</li>
+</ul>
+</li>
+<li>
+<p><strong>策略改进</strong>：</p>
+<ul>
+<li>根据当前的动作值函数 $Q(s, a)$ 更新策略，使其贪心于 $Q$。</li>
+</ul>
+</li>
+<li>
+<p><strong>重复</strong>：</p>
+<ul>
+<li>反复进行生成序列、计算比率、更新值函数和策略改进，直到策略收敛。</li>
+</ul>
+</li>
+</ol>
+<h4>优缺点分析</h4>
+<p><strong>优点</strong>：</p>
+<ol>
+<li><strong>降低方差</strong>：通过部分终止的思想，贴现意识的重要性采样显著减少了方差，使得估计更加稳定。</li>
+<li><strong>提高效率</strong>：减少不必要的比率计算，提高了算法的效率。</li>
+</ol>
+<p><strong>缺点</strong>：</p>
+<ol>
+<li><strong>复杂性增加</strong>：需要重新定义返回值和终止概率，增加了算法的复杂性。</li>
+<li><strong>适用范围有限</strong>：这种方法可能不适用于所有的强化学习问题，尤其是那些不易定义平坦部分返回值的问题。</li>
+</ol>
+<h4>应用实例</h4>
+<p>在实际应用中，贴现意识的重要性采样可以用于各种离策略强化学习任务。例如，在金融市场中，可以使用行为策略生成交易数据，同时评估和改进目标策略，以优化投资回报。</p>
+<h3>结论</h3>
+<p>贴现意识的重要性采样通过重新定义返回值和终止概率，显著减少了离策略估计的方差，提高了算法的效率和稳定性。尽管增加了算法的复杂性，但其在特定应用中的优势是显而易见的，特别是在需要高效估计和低方差的情况下。</p>
+
+    <h3>Python 文件</h3>
+    <pre><code># 07_5.8_贴现意识的重要性采样
+
+"""
+Lecture: /05._蒙特卡罗方法
+Content: 07_5.8_贴现意识的重要性采样
+"""
+
+import numpy as np
+from typing import Dict, Tuple, List
+
+class DiscountingAwareIS:
+    """
+    贴现意识的重要性采样类，包含用于求解马尔可夫决策过程（MDP）的策略评估和改进算法。
+
+    Attributes:
+        states: 状态集合
+        actions: 动作集合
+        transition_probabilities: 状态转移概率矩阵
+        rewards: 奖励矩阵
+        gamma: 折扣因子
+        behavior_policy: 行为策略
+        target_policy: 目标策略
+    """
+
+    def __init__(self, states: List[int], actions: List[int],
+                 transition_probabilities: Dict[Tuple[int, int, int], float],
+                 rewards: Dict[Tuple[int, int, int], float], gamma: float,
+                 behavior_policy: Dict[int, Dict[int, float]]):
+        """
+        初始化贴现意识的重要性采样类。
+
+        参数:
+            states: 状态集合
+            actions: 动作集合
+            transition_probabilities: 状态转移概率矩阵
+            rewards: 奖励矩阵
+            gamma: 折扣因子
+            behavior_policy: 行为策略
+        """
+        self.states = states
+        self.actions = actions
+        self.transition_probabilities = transition_probabilities
+        self.rewards = rewards
+        self.gamma = gamma
+        self.behavior_policy = behavior_policy
+        self.q_value = {(s, a): 0 for s in states for a in actions}
+        self.cumulative_weights = {(s, a): 0 for s in states for a in actions}
+        self.target_policy = {s: np.random.choice(actions) for s in states}
+
+    def generate_episode(self) -> List[Tuple[int, int, float]]:
+        """
+        生成一个遵循行为策略的完整序列。
+
+        返回:
+            List[Tuple[int, int, float]]: 序列列表，包含状态、动作和奖励
+        """
+        episode = []
+        state = np.random.choice(self.states)
+        while True:
+            action = np.random.choice(self.actions, p=[self.behavior_policy[state][a] for a in self.actions])
+            next_state = np.random.choice(self.states, p=[self.transition_probabilities[(state, action, s)] for s in self.states])
+            reward = self.rewards[(state, action, next_state)]
+            episode.append((state, action, reward))
+            if next_state == None:  # 假设终止状态用 None 表示
+                break
+            state = next_state
+        return episode
+
+    def update_q_value(self, episode: List[Tuple[int, int, float]]) -> None:
+        """
+        使用生成的序列更新动作值函数。
+
+        参数:
+            episode: 序列列表，包含状态、动作和奖励
+        """
+        G = 0
+        W = 1
+        for t, (state, action, reward) in enumerate(reversed(episode)):
+            G = reward + self.gamma * G
+            self.cumulative_weights[(state, action)] += W
+            self.q_value[(state, action)] += (W / self.cumulative_weights[(state, action)]) * (G - self.q_value[(state, action)])
+            self.target_policy[state] = max(self.actions, key=lambda a: self.q_value[(state, a)])
+            if action != self.target_policy[state]:
+                break
+            W *= 1.0 / self.behavior_policy[state][action]
+
+    def discounting_aware_is(self, num_episodes: int) -> None:
+        """
+        贴现意识的重要性采样算法，通过策略评估和策略改进找到最优策略。
+
+        参数:
+            num_episodes: 运行的序列数量
+        """
+        for _ in range(num_episodes):
+            episode = self.generate_episode()
+            self.update_q_value(episode)
+</code></pre>
+  </div>
+</body>
+</html>
+  

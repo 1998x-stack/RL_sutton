@@ -1,0 +1,190 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <title>2.9 关联搜索（上下文强盗）</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Math&display=swap">
+  <link rel="stylesheet" href="../markdown.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="../markdown.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>08_2.9_关联搜索（上下文强盗）</h1>
+<pre><code>Lecture: /02._表格解法方法
+Content: 08_2.9_关联搜索（上下文强盗）
+</code></pre>
+<h2>2.9 关联搜索（上下文强盗）</h2>
+<h3>引言</h3>
+<p>关联搜索，又称上下文强盗（Contextual Bandits），是一种在多臂强盗问题的基础上扩展而来的方法。与传统的多臂强盗问题不同，上下文强盗问题不仅考虑每个动作的奖励，还会考虑动作选择时的上下文信息。这种方法在个性化推荐系统、广告投放和医疗决策等领域有广泛应用。</p>
+<h3>问题定义</h3>
+<p>在上下文强盗问题中，每次决策之前，算法会接收到一个上下文 $ x_t $，然后基于当前的上下文选择一个动作 $ a_t $。每个动作的奖励不仅依赖于动作本身，还依赖于当前的上下文。上下文强盗的目标是在给定上下文的情况下，选择能够最大化累积奖励的动作。</p>
+<h3>算法原理</h3>
+<p>上下文强盗算法的核心在于如何利用上下文信息来优化动作选择。常见的方法包括线性回归、决策树和深度学习模型等。以下是一些常见的上下文强盗算法：</p>
+<h4>1. 线性回归</h4>
+<p>线性回归模型假设奖励 $ r $ 与上下文 $ x $ 和动作 $ a $ 之间存在线性关系。通过训练线性回归模型，可以预测在给定上下文和动作下的期望奖励。具体公式如下：</p>
+<p>$$ r_t(a) = x_t^T \theta_a + \epsilon $$</p>
+<p>其中， $ \theta_a $ 是与动作 $ a $ 相关的权重向量， $ \epsilon $ 是噪声项。</p>
+<h4>2. LinUCB</h4>
+<p>LinUCB 是一种基于上置信度界的线性回归模型。该算法在选择动作时，不仅考虑期望奖励，还考虑不确定性。具体公式如下：</p>
+<p>$$ \text{UCB}(a) = x_t^T \theta_a + \alpha \sqrt{x_t^T A_a^{-1} x_t} $$</p>
+<p>其中， $ A_a $ 是动作 $ a $ 的协方差矩阵， $ \alpha $ 是控制探索程度的参数。该公式中的第二项用于度量不确定性，随着样本数量的增加，不确定性会逐渐减小。</p>
+<h3>实验与结果</h3>
+<p>为了验证上下文强盗算法的有效性，可以在广告推荐系统中进行实验。实验设置如下：</p>
+<ol>
+<li>
+<p><strong>实验设置</strong>：</p>
+<ul>
+<li>模拟一个广告推荐系统，每个广告位对应一个动作。</li>
+<li>每次决策时，会接收到用户的上下文信息（例如年龄、性别、浏览历史等）。</li>
+<li>比较不同上下文强盗算法在1000次推荐中的表现。</li>
+</ul>
+</li>
+<li>
+<p><strong>结果分析</strong>：</p>
+<ul>
+<li><strong>平均点击率</strong>：实验结果显示，基于上下文信息的强盗算法（如LinUCB）能够显著提高广告的平均点击率。</li>
+<li><strong>探索与利用平衡</strong>：相比于传统的多臂强盗算法，上下文强盗算法能够更好地平衡探索与利用，在不同的上下文情况下灵活选择最优动作。</li>
+</ul>
+</li>
+</ol>
+<h3>实例分析</h3>
+<p>假设我们在一个广告推荐系统中应用LinUCB算法，实验结果如下：</p>
+<ul>
+<li>在前100步，算法通过调整模型参数，逐步优化广告选择策略。</li>
+<li>随着时间推移，广告的平均点击率逐渐提高，算法能够根据用户的上下文信息灵活推荐最合适的广告。</li>
+</ul>
+<h3>结论</h3>
+<p>关联搜索（上下文强盗）通过利用上下文信息来优化动作选择，在广告推荐、个性化服务和医疗决策等领域有广泛应用。实验结果表明，基于上下文信息的强盗算法能够显著提高决策效果，特别是在动态和多变的环境中表现优越。未来的研究可以进一步探索更复杂的上下文模型和更高效的算法，以适应更多实际应用场景。</p>
+
+    <h3>Python 文件</h3>
+    <pre><code># 08_2.9_关联搜索（上下文强盗）
+
+"""
+Lecture: /02._表格解法方法
+Content: 08_2.9_关联搜索（上下文强盗）
+"""
+
+import numpy as np
+import pandas as pd
+from typing import List, Tuple
+
+class ContextualBandit:
+    """关联搜索（上下文强盗）算法的实现类
+
+    Attributes:
+        num_arms: 动作数量，即广告数量
+        context_dim: 上下文向量的维度
+        alpha: 控制探索程度的参数
+        A: 动作对应的协方差矩阵
+        b: 动作对应的奖励向量
+    """
+
+    def __init__(self, num_arms: int, context_dim: int, alpha: float = 1.0) -> None:
+        """
+        初始化关联搜索（上下文强盗）算法实例
+        
+        Args:
+            num_arms: 动作数量
+            context_dim: 上下文向量的维度
+            alpha: 控制探索程度的参数，默认为1.0
+        """
+        self.num_arms = num_arms
+        self.context_dim = context_dim
+        self.alpha = alpha
+        self.A = [np.identity(context_dim) for _ in range(num_arms)]  # 协方差矩阵
+        self.b = [np.zeros(context_dim) for _ in range(num_arms)]  # 奖励向量
+
+    def select_action(self, context: np.ndarray) -> int:
+        """
+        根据当前的上下文选择动作
+        
+        Args:
+            context: 当前的上下文向量
+        
+        Returns:
+            选择的动作索引
+        """
+        p = np.zeros(self.num_arms)
+        for a in range(self.num_arms):
+            theta = np.linalg.inv(self.A[a]).dot(self.b[a])
+            p[a] = context.dot(theta) + self.alpha * np.sqrt(context.dot(np.linalg.inv(self.A[a])).dot(context))
+        return np.argmax(p)
+
+    def update(self, action: int, reward: float, context: np.ndarray) -> None:
+        """
+        更新动作的协方差矩阵和奖励向量
+        
+        Args:
+            action: 动作索引
+            reward: 动作获得的奖励
+            context: 当前的上下文向量
+        """
+        self.A[action] += np.outer(context, context)
+        self.b[action] += reward * context
+
+    def run(self, steps: int, contexts: np.ndarray, rewards: np.ndarray) -> List[Tuple[int, float]]:
+        """
+        运行关联搜索（上下文强盗）算法
+        
+        Args:
+            steps: 运行的步数
+            contexts: 上下文矩阵，每一行是一个上下文向量
+            rewards: 奖励矩阵，每一行是一个奖励向量
+        
+        Returns:
+            每一步的动作和奖励
+        """
+        results = []
+        for t in range(steps):
+            context = contexts[t]
+            action = self.select_action(context)
+            reward = rewards[t, action]
+            self.update(action, reward, context)
+            results.append((action, reward))
+        return results
+
+def main():
+    """
+    主函数，执行关联搜索（上下文强盗）算法并打印结果
+    """
+    num_arms = 10
+    context_dim = 5
+    steps = 1000
+    alpha = 1.0
+
+    # 生成随机的上下文和奖励数据
+    contexts = np.random.randn(steps, context_dim)
+    true_rewards = np.random.randn(num_arms, context_dim)
+    rewards = contexts.dot(true_rewards.T) + np.random.randn(steps, num_arms) * 0.1
+
+    bandit = ContextualBandit(num_arms, context_dim, alpha)
+    results = bandit.run(steps, contexts, rewards)
+
+    # 转换为DataFrame并打印结果
+    df = pd.DataFrame(results, columns=['Action', 'Reward'])
+    print(df.describe())
+
+    print("最终的协方差矩阵:")
+    for a in range(num_arms):
+        print(f"动作 {a}: \n{bandit.A[a]}")
+    print("最终的奖励向量:")
+    for a in range(num_arms):
+        print(f"动作 {a}: \n{bandit.b[a]}")
+
+    return df
+
+# Run the main function and save results
+df_results = main()
+df_results.to_csv("dataset/contextual_bandit_results.csv", index=False)
+</code></pre>
+  </div>
+</body>
+</html>
+  

@@ -1,0 +1,82 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <title>3.3 回报和情节</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Math&display=swap">
+  <link rel="stylesheet" href="../markdown.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="../markdown.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>02_3.3_回报和情节</h1>
+<pre><code>Lecture: /03._有限马尔可夫决策过程
+Content: 02_3.3_回报和情节
+</code></pre>
+<h2>3.3 回报和情节</h2>
+<h3>引言</h3>
+<p>在强化学习中，回报和情节是理解和解决问题的关键概念。回报（Return）衡量了代理在一段时间内所获得的总奖励，而情节（Episode）描述了代理与环境之间的一个完整的交互过程。本节将详细探讨回报和情节在有限马尔可夫决策过程（MDP）中的定义、作用及其在强化学习中的重要性。</p>
+<h3>回报（Return）</h3>
+<h4>定义</h4>
+<p>回报是指代理在某个时间步开始后的累积奖励。它反映了代理在当前决策策略下，预计可以获得的总收益。回报通常表示为 $ G_t $，其计算公式如下：</p>
+<p>$$ G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \cdots $$</p>
+<p>其中，$ R_{t+k} $ 是代理在时间步 $ t+k $ 获得的奖励，$\gamma$ 是折扣因子，介于0和1之间，用于降低远期奖励的重要性。</p>
+<h4>作用</h4>
+<p>回报的计算使得代理可以评估其行为的长期效果，而不仅仅关注即时奖励。这对于复杂环境中的决策尤为重要，因为许多任务的目标是最大化长期收益而非短期收益。</p>
+<h4>折扣因子</h4>
+<p>折扣因子 $\gamma$ 的选择对于回报的计算有重要影响：</p>
+<ul>
+<li>当 $\gamma = 0$ 时，代理只关心即时奖励。</li>
+<li>当 $\gamma \rightarrow 1$ 时，代理考虑整个未来的累积奖励。</li>
+</ul>
+<h3>情节（Episode）</h3>
+<h4>定义</h4>
+<p>情节是指代理从初始状态开始，经过一系列动作与环境交互，直至达到终止状态的一段完整过程。在许多强化学习问题中，一个情节表示一个独立的任务或试验。</p>
+<h4>作用</h4>
+<p>情节的定义使得我们可以将强化学习任务划分为若干独立的试验，每个试验从初始状态开始，直至任务完成。这种结构化的任务分解有助于代理更好地学习和优化其策略。</p>
+<h4>有限情节和无限情节</h4>
+<p>情节可以是有限的，也可以是无限的：</p>
+<ul>
+<li><strong>有限情节</strong>：情节在达到某个终止状态时结束。例如，在棋类游戏中，游戏结束时即为情节的终止。</li>
+<li><strong>无限情节</strong>：情节没有明确的终止状态，代理与环境的交互可以无限进行。例如，在某些持续运行的控制任务中，代理需要持续优化其行为。</li>
+</ul>
+<h3>回报和情节的关系</h3>
+<p>在强化学习中，回报和情节密切相关。代理通过在多个情节中累积回报来评估和改进其策略。每个情节的回报提供了关于代理行为效果的重要信息，帮助代理在未来的情节中做出更优的决策。</p>
+<h4>状态值函数和行动值函数</h4>
+<p>通过学习回报，代理可以估计状态值函数 $ V(s) $ 和行动值函数 $ Q(s, a) $：</p>
+<ul>
+<li><strong>状态值函数 $ V(s) $</strong>：表示在状态 $ s $ 下，代理在未来各时间步中预计可以获得的累积回报。
+$$ V(s) = \mathbb{E}[G_t \mid S_t = s] $$</li>
+<li><strong>行动值函数 $ Q(s, a) $</strong>：表示在状态 $ s $ 选择动作 $ a $ 后，代理在未来各时间步中预计可以获得的累积回报。
+$$ Q(s, a) = \mathbb{E}[G_t \mid S_t = s, A_t = a] $$</li>
+</ul>
+<h3>应用实例</h3>
+<h4>游戏</h4>
+<p>在游戏中，每一局游戏可以看作一个情节，游戏结束时计算回报。通过在多局游戏中累积回报，代理可以学习到更优的游戏策略。</p>
+<h4>自动驾驶</h4>
+<p>在自动驾驶任务中，每一次从出发点到目的地的驾驶过程可以看作一个情节。通过在多次驾驶任务中累积回报，代理可以优化其驾驶策略，提高安全性和效率。</p>
+<h4>医疗决策</h4>
+<p>在医疗决策中，每一次治疗过程可以看作一个情节，通过在多个治疗过程中累积回报，智能诊疗系统可以学习到更有效的治疗策略，提高治疗效果和患者生存率。</p>
+<h3>结论</h3>
+<p>回报和情节是强化学习中的两个核心概念。回报衡量了代理在一段时间内的总收益，而情节描述了代理与环境的一个完整交互过程。理解和利用回报与情节的关系，能够帮助我们设计更有效的强化学习算法，实现更优的决策。本节提供了对回报和情节的详细分析，为读者理解和应用强化学习算法提供了理论基础和实践指导。</p>
+
+    <h3>Python 文件</h3>
+    <pre><code># 02_3.3_回报和情节
+
+"""
+Lecture: /03._有限马尔可夫决策过程
+Content: 02_3.3_回报和情节
+"""
+
+</code></pre>
+  </div>
+</body>
+</html>
+  

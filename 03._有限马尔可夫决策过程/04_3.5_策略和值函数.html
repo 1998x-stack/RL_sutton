@@ -1,0 +1,232 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <title>3.5 策略和值函数</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Math&display=swap">
+  <link rel="stylesheet" href="../markdown.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="../markdown.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>04_3.5_策略和值函数</h1>
+<pre><code>Lecture: /03._有限马尔可夫决策过程
+Content: 04_3.5_策略和值函数
+</code></pre>
+<h2>3.5 策略和值函数</h2>
+<h3>引言</h3>
+<p>在强化学习中，策略和值函数是两个核心概念。策略定义了代理在每个状态下选择动作的规则，而值函数则用于评估状态或状态-动作对的长期收益。这两个概念在有限马尔可夫决策过程（MDP）中起着至关重要的作用。本节将详细探讨策略和值函数的定义、作用及其在强化学习中的应用。</p>
+<h3>策略（Policy）</h3>
+<h4>定义</h4>
+<p>策略 $\pi$ 是指代理在每个状态 $s$ 下选择动作 $a$ 的概率分布。具体来说，策略可以表示为：</p>
+<p>$$ \pi(a \mid s) = P(A_t = a \mid S_t = s) $$</p>
+<p>其中，$\pi(a \mid s)$ 表示在状态 $s$ 下选择动作 $a$ 的概率。</p>
+<h4>分类</h4>
+<p>策略可以分为确定性策略和随机性策略：</p>
+<ul>
+<li><strong>确定性策略</strong>：在每个状态下，总是选择同一个动作，即 $\pi(s) = a$。</li>
+<li><strong>随机性策略</strong>：在每个状态下，以一定的概率分布选择动作，即 $\pi(a \mid s)$。</li>
+</ul>
+<h4>作用</h4>
+<p>策略是强化学习算法的核心，决定了代理在不同状态下的行为选择。通过优化策略，代理可以最大化其长期累积奖励。</p>
+<h3>值函数（Value Function）</h3>
+<h4>定义</h4>
+<p>值函数用于评估某一状态或状态-动作对的长期收益。值函数主要包括状态值函数 $V(s)$ 和行动值函数 $Q(s, a)$：</p>
+<ul>
+<li>
+<p><strong>状态值函数 $V(s)$</strong>：表示在状态 $s$ 下，遵循策略 $\pi$ 时的预期总回报。
+$$ V^{\pi}(s) = \mathbb{E}^{\pi}[G_t \mid S_t = s] $$</p>
+</li>
+<li>
+<p><strong>行动值函数 $Q(s, a)$</strong>：表示在状态 $s$ 选择动作 $a$ 后，遵循策略 $\pi$ 时的预期总回报。
+$$ Q^{\pi}(s, a) = \mathbb{E}^{\pi}[G_t \mid S_t = s, A_t = a] $$</p>
+</li>
+</ul>
+<h4>计算</h4>
+<p>值函数的计算依赖于贝尔曼方程。对于状态值函数 $V(s)$，贝尔曼方程为：</p>
+<p>$$ V^{\pi}(s) = \sum_{a} \pi(a \mid s) \sum_{s'} P(s' \mid s, a) \left[ R(s, a, s') + \gamma V^{\pi}(s') \right] $$</p>
+<p>对于行动值函数 $Q(s, a)$，贝尔曼方程为：</p>
+<p>$$ Q^{\pi}(s, a) = \sum_{s'} P(s' \mid s, a) \left[ R(s, a, s') + \gamma \sum_{a'} \pi(a' \mid s') Q^{\pi}(s', a') \right] $$</p>
+<h4>作用</h4>
+<p>值函数用于评估代理的长期收益，是策略优化的基础。通过估计值函数，代理可以比较不同状态和动作的收益，从而优化其策略。</p>
+<h3>策略优化</h3>
+<h4>策略迭代</h4>
+<p>策略迭代是一种通过交替执行策略评估和策略改进来优化策略的方法。具体步骤如下：</p>
+<ol>
+<li><strong>策略评估</strong>：根据当前策略 $\pi$ 计算值函数 $V^{\pi}$。</li>
+<li><strong>策略改进</strong>：根据值函数 $V^{\pi}$ 更新策略，使其在每个状态下选择的动作最大化预期回报。</li>
+</ol>
+<h4>值迭代</h4>
+<p>值迭代是一种直接通过更新值函数来优化策略的方法。具体步骤如下：</p>
+<ol>
+<li>初始化值函数 $V(s)$。</li>
+<li>迭代更新值函数，直到收敛：
+$$ V(s) \leftarrow \max_{a} \sum_{s'} P(s' \mid s, a) \left[ R(s, a, s') + \gamma V(s') \right] $$</li>
+<li>根据最终的值函数 $V(s)$ 确定最优策略。</li>
+</ol>
+<h3>应用实例</h3>
+<h4>游戏</h4>
+<p>在游戏中，策略和值函数可以用于设计智能AI，使其能够根据游戏状态选择最优动作，提高游戏胜率。</p>
+<h4>自动驾驶</h4>
+<p>在自动驾驶任务中，策略和值函数可以用于优化车辆的驾驶策略，提高行驶安全性和效率。</p>
+<h4>工业控制</h4>
+<p>在工业控制任务中，策略和值函数可以用于设计优化控制策略，提高生产效率和产品质量。</p>
+<h3>结论</h3>
+<p>策略和值函数是强化学习中的两个核心概念。策略定义了代理在每个状态下的行为选择规则，而值函数用于评估状态或状态-动作对的长期收益。通过理解和优化策略和值函数，代理可以在复杂环境中实现最优决策。本节提供了对策略和值函数的详细分析，为读者理解和应用强化学习算法提供了理论基础和实践指导。</p>
+
+    <h3>Python 文件</h3>
+    <pre><code># 04_3.5_策略和值函数
+
+"""
+Lecture: /03._有限马尔可夫决策过程
+Content: 04_3.5_策略和值函数
+"""
+
+import numpy as np
+from typing import List, Dict
+
+class BellmanOptimalEquations:
+    """
+    用于计算贝尔曼最优方程的类
+
+    Attributes:
+        states: 状态空间的列表
+        actions: 动作空间的列表
+        transition_probabilities: 状态转移概率字典
+        rewards: 奖励函数字典
+        gamma: 折扣因子
+        state_values: 状态值函数
+        action_values: 行动值函数
+    """
+
+    def __init__(self, states: List[str], actions: List[str], transition_probabilities: Dict[str, Dict[str, Dict[str, float]]], rewards: Dict[str, Dict[str, Dict[str, float]]], gamma: float = 0.9) -> None:
+        """
+        初始化贝尔曼最优方程类
+        
+        Args:
+            states: 状态空间的列表
+            actions: 动作空间的列表
+            transition_probabilities: 状态转移概率字典，格式为{状态: {动作: {下一个状态: 概率}}}
+            rewards: 奖励函数字典，格式为{状态: {动作: {下一个状态: 奖励}}}
+            gamma: 折扣因子，默认为0.9
+        """
+        self.states = states
+        self.actions = actions
+        self.transition_probabilities = transition_probabilities
+        self.rewards = rewards
+        self.gamma = gamma
+        self.state_values = {state: 0.0 for state in states}
+        self.action_values = {state: {action: 0.0 for action in actions} for state in states}
+
+    def bellman_optimality_update(self) -> None:
+        """
+        使用贝尔曼最优方程更新状态值函数
+        """
+        new_state_values = {}
+        for state in self.states:
+            max_value = float('-inf')
+            for action in self.actions:
+                q_value = sum(self.transition_probabilities[state][action][next_state] * 
+                              (self.rewards[state][action][next_state] + self.gamma * self.state_values[next_state])
+                              for next_state in self.states)
+                if q_value > max_value:
+                    max_value = q_value
+            new_state_values[state] = max_value
+        self.state_values = new_state_values
+
+    def compute_optimal_policy(self) -> Dict[str, str]:
+        """
+        计算最优策略
+        
+        Returns:
+            最优策略字典，格式为{状态: 动作}
+        """
+        policy = {}
+        for state in self.states:
+            max_value = float('-inf')
+            best_action = None
+            for action in self.actions:
+                q_value = sum(self.transition_probabilities[state][action][next_state] * 
+                              (self.rewards[state][action][next_state] + self.gamma * self.state_values[next_state])
+                              for next_state in self.states)
+                if q_value > max_value:
+                    max_value = q_value
+                    best_action = action
+            policy[state] = best_action
+        return policy
+
+    def value_iteration(self, epsilon: float = 1e-6) -> None:
+        """
+        执行值迭代算法，直到收敛
+        
+        Args:
+            epsilon: 收敛阈值，默认为1e-6
+        """
+        while True:
+            old_state_values = self.state_values.copy()
+            self.bellman_optimality_update()
+            delta = max(abs(old_state_values[state] - self.state_values[state]) for state in self.states)
+            if delta < epsilon:
+                break
+
+def main():
+    """
+    主函数，测试贝尔曼最优方程类
+    """
+    states = ['s1', 's2', 's3']
+    actions = ['a1', 'a2']
+    transition_probabilities = {
+        's1': {
+            'a1': {'s1': 0.1, 's2': 0.9, 's3': 0.0},
+            'a2': {'s1': 0.0, 's2': 0.0, 's3': 1.0}
+        },
+        's2': {
+            'a1': {'s1': 0.1, 's2': 0.8, 's3': 0.1},
+            'a2': {'s1': 0.0, 's2': 0.9, 's3': 0.1}
+        },
+        's3': {
+            'a1': {'s1': 0.0, 's2': 0.0, 's3': 1.0},
+            'a2': {'s1': 0.0, 's2': 0.0, 's3': 1.0}
+        }
+    }
+    rewards = {
+        's1': {
+            'a1': {'s1': 0, 's2': 10, 's3': 0},
+            'a2': {'s1': 0, 's2': 0, 's3': 50}
+        },
+        's2': {
+            'a1': {'s1': 0, 's2': -10, 's3': 10},
+            'a2': {'s1': 0, 's2': -10, 's3': 10}
+        },
+        's3': {
+            'a1': {'s1': 0, 's2': 0, 's3': 0},
+            'a2': {'s1': 0, 's2': 0, 's3': 0}
+        }
+    }
+
+    bellman = BellmanOptimalEquations(states, actions, transition_probabilities, rewards)
+    bellman.value_iteration()
+    
+    print("最优状态值函数:")
+    for state, value in bellman.state_values.items():
+        print(f"状态 {state}: {value}")
+
+    optimal_policy = bellman.compute_optimal_policy()
+    print("\n最优策略:")
+    for state, action in optimal_policy.items():
+        print(f"状态 {state}: 动作 {action}")
+
+if __name__ == "__main__":
+    main()
+</code></pre>
+  </div>
+</body>
+</html>
+  

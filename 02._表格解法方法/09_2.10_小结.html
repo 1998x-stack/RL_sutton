@@ -1,0 +1,173 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <title>2.10 小结</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Math&display=swap">
+  <link rel="stylesheet" href="../markdown.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="../markdown.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>09_2.10_小结</h1>
+<pre><code>Lecture: /02._表格解法方法
+Content: 09_2.10_小结
+</code></pre>
+<h2>2.10 小结</h2>
+<h3>引言</h3>
+<p>本章总结了多种强化学习中的动作选择方法，特别是多臂强盗问题及其变体。这些方法在不同的应用场景下表现出色，为我们提供了丰富的策略选择。下面对各个方法进行详细总结与分析。</p>
+<h3>贪婪方法与ε-贪婪方法</h3>
+<h4>贪婪方法</h4>
+<p>贪婪方法总是选择当前估计值最高的动作，以最大化即时奖励。虽然这种方法简单易行，但由于缺乏探索机制，容易陷入次优解，特别是在初期缺乏足够的信息时。贪婪方法在长期表现不如其他更复杂的算法。</p>
+<h4>ε-贪婪方法</h4>
+<p>ε-贪婪方法在大多数情况下选择估计值最高的动作，但以小概率 ε 选择随机动作。这种方法通过引入探索机制，确保所有动作都有机会被尝试，从而提高找到最优解的概率。实验表明，ε-贪婪方法在长期内表现优于纯贪婪方法，因为它更好地平衡了探索与利用。</p>
+<h3>乐观初始值</h3>
+<p>乐观初始值方法通过为每个动作设定较高的初始估计值，鼓励算法在早期阶段进行更多的探索。这种方法避免了过早地陷入次优解，有助于更快地发现最优动作。随着时间的推移，算法会逐渐调整估计值，使其更接近实际情况。</p>
+<h3>上置信度界动作选择（UCB）</h3>
+<p>UCB 方法通过计算每个动作的上置信度界值，选择置信度界值最高的动作。该方法在选择动作时不仅考虑当前估计值，还考虑不确定性，从而实现更好的探索与利用平衡。UCB 方法在多臂强盗问题中表现出色，能够获得较高的长期奖励。</p>
+<h3>梯度强盗算法</h3>
+<p>梯度强盗算法通过优化策略参数，直接影响动作选择的概率分布。该方法通过调整动作选择的偏好值，以优化期望奖励。梯度强盗算法在不同参数设置下表现良好，能够逐步提高平均奖励。该方法不仅适用于多臂强盗问题，还可推广到其他策略优化的强化学习问题中。</p>
+<h3>关联搜索（上下文强盗）</h3>
+<p>关联搜索（上下文强盗）方法在动作选择时考虑上下文信息，通过利用上下文信息来优化动作选择。这种方法在广告推荐、个性化服务和医疗决策等领域有广泛应用。实验表明，基于上下文信息的强盗算法能够显著提高决策效果，特别是在动态和多变的环境中表现优越。</p>
+<h3>结论</h3>
+<p>总结本章内容，多种强化学习中的动作选择方法各有优劣，适用于不同的应用场景。通过合理选择和组合这些方法，可以在各种强化学习问题中实现更优的性能。未来研究可以进一步探索这些方法的改进和优化，以适应更复杂的环境和需求。</p>
+<hr>
+<h3>2.10 小结 - 详细表格</h3>
+<p>下表总结了本章中讨论的主要强化学习方法，包括贪婪方法、ε-贪婪方法、乐观初始值方法、上置信度界（UCB）方法、梯度强盗算法和关联搜索（上下文强盗）方法。每种方法的优缺点、适用场景及其主要公式详述如下：</p>
+<table>
+<thead>
+<tr>
+<th>方法名称</th>
+<th>主要特点</th>
+<th>优点</th>
+<th>缺点</th>
+<th>适用场景</th>
+<th>公式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>贪婪方法</td>
+<td>总是选择当前估计值最高的动作</td>
+<td>简单易行，计算量小</td>
+<td>缺乏探索，可能陷入次优解</td>
+<td>初始阶段信息充分，探索成本高的场景</td>
+<td>$ A_t = \arg\max_a Q_t(a) $</td>
+</tr>
+<tr>
+<td>ε-贪婪方法</td>
+<td>大多数情况下选择估计值最高的动作，小概率 ε 随机选择</td>
+<td>平衡探索与利用，长期表现优</td>
+<td>需要选择适当的 ε 值，早期表现不稳定</td>
+<td>需要平衡探索与利用的场景，如广告推荐</td>
+<td>$ A_t = \begin{cases} \arg\max_a Q_t(a) &amp; \text{with probability } 1 - \epsilon \ \text{random action} &amp; \text{with probability } \epsilon \end{cases} $</td>
+</tr>
+<tr>
+<td>乐观初始值方法</td>
+<td>设定较高的初始估计值，鼓励探索</td>
+<td>促进早期探索，避免局部最优</td>
+<td>需要选择适当的初始值，初期可能高估</td>
+<td>需要快速发现最优解的场景，如新产品推荐</td>
+<td>$ Q_0(a) = \text{high value} $</td>
+</tr>
+<tr>
+<td>上置信度界（UCB）方法</td>
+<td>计算每个动作的上置信度界值，选择置信度界值最高的动作</td>
+<td>平衡探索与利用，长期表现优</td>
+<td>计算量相对较大，需维护置信度界</td>
+<td>动作价值随时间变化较大的场景，如动态定价</td>
+<td>$ UCB_t(a) = Q_t(a) + c \sqrt{\frac{\ln t}{N_t(a)}} $</td>
+</tr>
+<tr>
+<td>梯度强盗算法</td>
+<td>优化策略参数，直接影响动作选择的概率分布</td>
+<td>能够逐步优化动作选择，适用广泛</td>
+<td>参数设置复杂，需平衡步长</td>
+<td>策略优化问题，如个性化服务</td>
+<td>$ H_{t+1}(a) = H_t(a) + \alpha (R_t - \bar{R}_t) (I(A_t = a) - \pi_t(a)) $</td>
+</tr>
+<tr>
+<td>关联搜索（上下文强盗）方法</td>
+<td>利用上下文信息进行动作选择</td>
+<td>考虑上下文信息，决策更精准</td>
+<td>需要上下文信息，模型复杂</td>
+<td>广告推荐、个性化服务和医疗决策等</td>
+<td>$ \pi_t(a \mid x_t) = \frac{\exp(H_t(a))}{\sum_{b=1}^k \exp(H_t(b))} $</td>
+</tr>
+</tbody>
+</table>
+<h3>方法详解</h3>
+<h4>1. 贪婪方法</h4>
+<ul>
+<li><strong>主要特点</strong>：总是选择当前估计值最高的动作。</li>
+<li><strong>优点</strong>：简单易行，计算量小。</li>
+<li><strong>缺点</strong>：缺乏探索，可能陷入次优解。</li>
+<li><strong>适用场景</strong>：适用于初始阶段信息充分且探索成本高的场景。</li>
+<li><strong>公式</strong>： $ A_t = \arg\max_a Q_t(a) $</li>
+</ul>
+<h4>2. ε-贪婪方法</h4>
+<ul>
+<li><strong>主要特点</strong>：大多数情况下选择估计值最高的动作，小概率 ε 随机选择。</li>
+<li><strong>优点</strong>：平衡探索与利用，长期表现优。</li>
+<li><strong>缺点</strong>：需要选择适当的 ε 值，早期表现不稳定。</li>
+<li><strong>适用场景</strong>：适用于需要平衡探索与利用的场景，如广告推荐。</li>
+<li><strong>公式</strong>：
+$$ A_t = \begin{cases} \arg\max_a Q_t(a) &amp; \text{with probability } 1 - \epsilon \ \text{random action} &amp; \text{with probability } \epsilon \end{cases} $$</li>
+</ul>
+<h4>3. 乐观初始值方法</h4>
+<ul>
+<li><strong>主要特点</strong>：设定较高的初始估计值，鼓励探索。</li>
+<li><strong>优点</strong>：促进早期探索，避免局部最优。</li>
+<li><strong>缺点</strong>：需要选择适当的初始值，初期可能高估。</li>
+<li><strong>适用场景</strong>：适用于需要快速发现最优解的场景，如新产品推荐。</li>
+<li><strong>公式</strong>： $ Q_0(a) = \text{high value} $</li>
+</ul>
+<h4>4. 上置信度界（UCB）方法</h4>
+<ul>
+<li><strong>主要特点</strong>：计算每个动作的上置信度界值，选择置信度界值最高的动作。</li>
+<li><strong>优点</strong>：平衡探索与利用，长期表现优。</li>
+<li><strong>缺点</strong>：计算量相对较大，需维护置信度界。</li>
+<li><strong>适用场景</strong>：适用于动作价值随时间变化较大的场景，如动态定价。</li>
+<li><strong>公式</strong>： $ UCB_t(a) = Q_t(a) + c \sqrt{\frac{\ln t}{N_t(a)}} $</li>
+</ul>
+<h4>5. 梯度强盗算法</h4>
+<ul>
+<li><strong>主要特点</strong>：优化策略参数，直接影响动作选择的概率分布。</li>
+<li><strong>优点</strong>：能够逐步优化动作选择，适用广泛。</li>
+<li><strong>缺点</strong>：参数设置复杂，需平衡步长。</li>
+<li><strong>适用场景</strong>：适用于策略优化问题，如个性化服务。</li>
+<li><strong>公式</strong>：
+$$ H_{t+1}(a) = H_t(a) + \alpha (R_t - \bar{R}_t) (I(A_t = a) - \pi_t(a)) $$</li>
+</ul>
+<h4>6. 关联搜索（上下文强盗）方法</h4>
+<ul>
+<li><strong>主要特点</strong>：利用上下文信息进行动作选择。</li>
+<li><strong>优点</strong>：考虑上下文信息，决策更精准。</li>
+<li><strong>缺点</strong>：需要上下文信息，模型复杂。</li>
+<li><strong>适用场景</strong>：适用于广告推荐、个性化服务和医疗决策等。</li>
+<li><strong>公式</strong>：
+$$ \pi_t(a \mid x_t) = \frac{\exp(H_t(a))}{\sum_{b=1}^k \exp(H_t(b))} $$</li>
+</ul>
+<h3>结论</h3>
+<p>总结本章内容，多种强化学习中的动作选择方法各有优劣，适用于不同的应用场景。通过合理选择和组合这些方法，可以在各种强化学习问题中实现更优的性能。未来研究可以进一步探索这些方法的改进和优化，以适应更复杂的环境和需求。</p>
+
+    <h3>Python 文件</h3>
+    <pre><code># 09_2.10_小结
+
+"""
+Lecture: /02._表格解法方法
+Content: 09_2.10_小结
+"""
+
+</code></pre>
+  </div>
+</body>
+</html>
+  

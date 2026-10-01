@@ -1,0 +1,153 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <title>2.3 10臂测试平台</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Math&display=swap">
+  <link rel="stylesheet" href="../markdown.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="../markdown.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>02_2.3_10臂测试平台</h1>
+<pre><code>Lecture: /02._表格解法方法
+Content: 02_2.3_10臂测试平台
+</code></pre>
+<h2>2.3 10臂测试平台</h2>
+<h3>引言</h3>
+<p>为了大致评估贪婪方法和ε-贪婪动作值方法的相对有效性，作者设计了一组测试问题。这个测试问题组包含2000个随机生成的10臂强盗问题，每个强盗问题都有10个动作，每个动作的真实值 $q^*(a)$ 都是从均值为0、方差为1的正态分布中抽取的 。</p>
+<h3>测试平台的设计</h3>
+<h4>1. 动作值的分布</h4>
+<p>在每个强盗问题中，10个动作的真实值 $q^<em>(a)$ 是从均值为0、方差为1的正态分布中抽取的。每次选择动作 $A_t$ 后，实际的奖励 $R_t$ 是从均值为 $q^</em>(A_t)$ 和方差为1的正态分布中抽取的。这些分布在图2.1中用灰色显示  。</p>
+<h4>2. 测试运行</h4>
+<p>对于每种学习方法，可以在1000个时间步内测量其随着经验增加而改善的性能和行为。这构成了一次运行。重复这个过程2000次，每次都使用一个不同的强盗问题，我们可以获得学习算法的平均行为的度量  。</p>
+<h3>实验对比</h3>
+<p>图2.2比较了贪婪方法和两种ε-贪婪方法（$\epsilon=0.01$ 和 $\epsilon=0.1$）在10臂测试平台上的表现。所有方法都使用样本平均技术来形成其动作值估计。上图显示了预期奖励随着经验的增加而增加的情况。贪婪方法在最初稍微快于其他方法，但随后在较低水平上趋于平稳。在这个测试平台上，贪婪方法的每步奖励仅约为1，而最佳可能值约为1.55。贪婪方法在长期表现显著较差，因为它经常会陷入执行次优动作的困境  。</p>
+<h3>关键分析</h3>
+<h4>1. 贪婪方法的局限性</h4>
+<p>贪婪方法总是选择当前估计值最大的动作，因此利用当前知识最大化即时奖励。然而，这种方法忽略了对其他动作的探索，可能会错过那些可能更优的动作。这导致在长期内，贪婪方法的性能较差，因为它可能会一直选择次优动作而未能发现最优动作 。</p>
+<h4>2. ε-贪婪方法的优势</h4>
+<p>ε-贪婪方法通过引入一个小概率$\epsilon$，在每个时间步随机选择一个动作，从而在探索和利用之间取得平衡。这种方法确保了每个动作都会被采样无数次，从而使所有的 $Q_t(a)$ 收敛到 $q^*(a)$。实验结果显示，$\epsilon=0.1$ 的方法在长期表现最好，因为它能够更好地探索动作空间并发现最优动作 。</p>
+<h4>3. 实验结果分析</h4>
+<ul>
+<li><strong>平均奖励</strong>：上图显示，贪婪方法在初期略快于ε-贪婪方法，但随后在较低水平上趋于平稳。ε-贪婪方法在长期表现更好，尤其是$\epsilon=0.1$ 的方法，每步奖励接近最佳可能值1.55。</li>
+<li><strong>最优动作的选择比例</strong>：下图显示，贪婪方法仅在约三分之一的任务中找到了最优动作，而ε-贪婪方法随着时间的推移，选择最优动作的概率接近1  。</li>
+</ul>
+<h3>结论</h3>
+<p>10臂测试平台展示了贪婪方法和ε-贪婪方法在多臂强盗问题中的相对有效性。实验结果表明，ε-贪婪方法在长期表现优于贪婪方法，因为它能够在探索和利用之间取得平衡，更好地发现最优动作。这一结果强调了在强化学习中，探索对于发现最优策略的重要性。</p>
+<p>通过10臂测试平台的实验，我们可以更清楚地理解不同动作值方法的优缺点，并为实际应用中选择合适的强化学习算法提供参考  。</p>
+
+    <h3>Python 文件</h3>
+    <pre><code># 02_2.3_10臂测试平台
+
+"""
+Lecture: /02._表格解法方法
+Content: 02_2.3_10臂测试平台
+"""
+
+import numpy as np
+import pandas as pd
+from typing import List, Tuple
+
+class TenArmedTestbed:
+    """10臂测试平台的实现类
+
+    Attributes:
+        num_arms: 动作数量，即拉杆数量
+        true_values: 各拉杆的真实奖励期望值
+        estimated_values: 各拉杆的估计奖励期望值
+        action_counts: 各拉杆的被选择次数
+        epsilon: 探索概率
+    """
+
+    def __init__(self, num_arms: int = 10, epsilon: float = 0.1) -> None:
+        """
+        初始化10臂测试平台实例
+        
+        Args:
+            num_arms: 动作数量，默认为10
+            epsilon: 探索概率，默认为0.1
+        """
+        self.num_arms = num_arms
+        self.epsilon = epsilon
+        self.true_values = np.random.randn(num_arms)  # 各拉杆的真实奖励期望值
+        self.estimated_values = np.zeros(num_arms)  # 各拉杆的估计奖励期望值
+        self.action_counts = np.zeros(num_arms)  # 各拉杆的被选择次数
+
+    def select_action(self) -> int:
+        """
+        根据ε-贪婪策略选择动作
+        
+        Returns:
+            选择的动作索引
+        """
+        if np.random.rand() < self.epsilon:
+            return np.random.randint(self.num_arms)  # 随机选择动作
+        else:
+            return np.argmax(self.estimated_values)  # 选择估计值最大的动作
+
+    def update_estimates(self, action: int, reward: float) -> None:
+        """
+        更新动作的估计值
+        
+        Args:
+            action: 动作索引
+            reward: 动作获得的奖励
+        """
+        self.action_counts[action] += 1
+        self.estimated_values[action] += (reward - self.estimated_values[action]) / self.action_counts[action]
+
+    def run(self, steps: int) -> List[Tuple[int, float]]:
+        """
+        运行10臂测试平台
+        
+        Args:
+            steps: 运行的步数
+        
+        Returns:
+            每一步的动作和奖励
+        """
+        results = []
+        for _ in range(steps):
+            action = self.select_action()
+            reward = np.random.randn() + self.true_values[action]
+            self.update_estimates(action, reward)
+            results.append((action, reward))
+        return results
+
+def main():
+    """
+    主函数，执行10臂测试平台并打印结果
+    """
+    num_arms = 10
+    steps = 10000
+    epsilon = 0.1
+
+    testbed = TenArmedTestbed(num_arms, epsilon)
+    results = testbed.run(steps)
+
+    # 转换为DataFrame并打印结果
+    df = pd.DataFrame(results, columns=['Action', 'Reward'])
+    print(df.describe())
+
+    print(f"真实值: {testbed.true_values}")
+    print(f"估计值: {testbed.estimated_values}")
+    print(f"选择次数: {testbed.action_counts}")
+
+    return df
+
+# Run the main function and save results
+df_results = main()
+df_results.to_csv("dataset/ten_armed_testbed_results.csv", index=False)
+</code></pre>
+  </div>
+</body>
+</html>
+  

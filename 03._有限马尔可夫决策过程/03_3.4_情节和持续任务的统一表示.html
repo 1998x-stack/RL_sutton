@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <title>3.4 情节和持续任务的统一表示</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Math&display=swap">
+  <link rel="stylesheet" href="../markdown.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="../markdown.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>03_3.4_情节和持续任务的统一表示</h1>
+<pre><code>Lecture: /03._有限马尔可夫决策过程
+Content: 03_3.4_情节和持续任务的统一表示
+</code></pre>
+<h2>3.4 情节和持续任务的统一表示</h2>
+<h3>引言</h3>
+<p>在强化学习中，情节（Episodic Tasks）和持续任务（Continuing Tasks）是两类不同的任务类型。情节指的是具有明确开始和结束的任务，而持续任务则是没有明确结束的持续性任务。本节将详细探讨如何在有限马尔可夫决策过程（MDP）框架下统一表示情节和持续任务，以及这种表示方法的优势和应用。</p>
+<h3>情节任务</h3>
+<h4>定义</h4>
+<p>情节任务是指那些有明确开始和结束的任务。在这些任务中，代理与环境的交互会在达到某个终止状态时结束。例如，在棋类游戏中，一局棋的开始和结束就是一个情节。在情节任务中，回报的计算通常基于整个情节的累积奖励。</p>
+<h4>计算回报</h4>
+<p>对于情节任务，回报 $G_t$ 通常定义为从时间步 $t$ 开始直到情节结束的累积奖励：</p>
+<p>$$ G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \cdots + \gamma^{T-t-1} R_T $$</p>
+<p>其中，$T$ 是情节的结束时间步，$\gamma$ 是折扣因子。</p>
+<h3>持续任务</h3>
+<h4>定义</h4>
+<p>持续任务是指那些没有明确结束时间的任务。在这些任务中，代理与环境的交互是连续的，没有明确的终止状态。例如，在自动驾驶任务中，车辆的驾驶任务是连续进行的，没有明确的结束点。在持续任务中，回报的计算需要考虑无限时间步的累积奖励。</p>
+<h4>计算回报</h4>
+<p>对于持续任务，回报 $G_t$ 定义为从时间步 $t$ 开始的无限累积奖励：</p>
+<p>$$ G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \cdots $$</p>
+<p>由于没有明确的结束时间步，回报的计算需要考虑无限时间步，这使得折扣因子的选择尤为重要。</p>
+<h3>统一表示</h3>
+<h4>统一的回报定义</h4>
+<p>为了在同一框架下处理情节和持续任务，我们可以采用统一的回报定义。这种统一表示可以通过引入一个“伪终止状态”来实现。具体来说，我们可以将持续任务视为一种特殊的情节任务，即在达到某个极大时间步后，任务以一定概率终止。</p>
+<h4>伪终止状态</h4>
+<p>在这种表示中，持续任务在每个时间步 $t$ 以概率 $1 - \gamma$ 终止，回报的计算公式为：</p>
+<p>$$ G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \cdots $$</p>
+<p>这种表示方式不仅能够处理情节任务，还能通过调整折扣因子 $\gamma$ 来适应持续任务的需求。</p>
+<h3>优势</h3>
+<ol>
+<li>
+<p><strong>统一处理</strong>：通过引入伪终止状态，情节和持续任务可以在同一框架下统一处理，简化了算法设计和实现。</p>
+</li>
+<li>
+<p><strong>灵活性</strong>：统一表示使得算法可以灵活地处理各种不同类型的任务，适应不同的应用场景。</p>
+</li>
+<li>
+<p><strong>理论一致性</strong>：这种表示方式在理论上具有一致性，有助于更深入地理解和分析强化学习算法。</p>
+</li>
+</ol>
+<h3>应用实例</h3>
+<h4>游戏</h4>
+<p>在游戏中，情节和持续任务的统一表示可以用于设计更加通用的游戏AI。无论是单局游戏（情节）还是持续对战（持续任务），都可以在同一框架下进行处理。</p>
+<h4>自动驾驶</h4>
+<p>在自动驾驶任务中，情节和持续任务的统一表示可以帮助设计更稳定和高效的驾驶策略。无论是单次行程（情节）还是持续行驶（持续任务），都可以通过这种方法进行优化。</p>
+<h4>工业控制</h4>
+<p>在工业控制任务中，情节和持续任务的统一表示可以用于设计更加灵活和高效的控制系统。无论是单次操作（情节）还是持续运行（持续任务），都可以在同一框架下进行处理和优化。</p>
+<h3>结论</h3>
+<p>情节和持续任务的统一表示是强化学习中的重要概念。通过引入伪终止状态，可以在同一框架下处理不同类型的任务，简化算法设计，增强灵活性和理论一致性。这种方法在实际应用中具有广泛的适用性，有助于解决多样化的强化学习问题。本节提供了对情节和持续任务统一表示的详细分析，为读者理解和应用强化学习算法提供了理论基础和实践指导。</p>
+
+    <h3>Python 文件</h3>
+    <pre><code># 03_3.4_情节和持续任务的统一表示
+
+"""
+Lecture: /03._有限马尔可夫决策过程
+Content: 03_3.4_情节和持续任务的统一表示
+"""
+
+</code></pre>
+  </div>
+</body>
+</html>
+  

@@ -1,0 +1,67 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <title>2.6 乐观初始值</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Math&display=swap">
+  <link rel="stylesheet" href="../markdown.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="../markdown.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>05_2.6_乐观初始值</h1>
+<pre><code>Lecture: /02._表格解法方法
+Content: 05_2.6_乐观初始值
+</code></pre>
+<h2>2.6 乐观初始值</h2>
+<h3>引言</h3>
+<p>在强化学习中，初始值的选择可以显著影响算法的表现和学习速度。乐观初始值方法通过为每个动作分配较高的初始估计值，鼓励算法在早期阶段进行更多的探索，从而更快地发现最优动作。</p>
+<h3>乐观初始值的概念</h3>
+<p>乐观初始值方法通过设置较高的初始动作值估计，迫使算法在一开始就探索所有的动作。这种方法的核心思想是通过高估动作的价值来引导探索，避免算法在早期阶段过早地陷入局部最优解。</p>
+<h4>1. 初始值设定</h4>
+<p>通常，我们会为每个动作 $a$ 设定一个较高的初始值 $Q_0(a)$。这个值应该高于环境中可能的任何实际奖励值。例如，如果我们预计奖励值范围为 $[-1, 1]$，可以将初始值设定为 $Q_0(a) = 5$。</p>
+<h4>2. 更新规则</h4>
+<p>在每次选择和更新动作值时，依然使用增量更新公式：
+$$ Q_{n+1}(a) = Q_n(a) + \frac{1}{n} [R_n - Q_n(a)] $$</p>
+<p>由于初始值较高，算法在早期阶段会倾向于选择那些尚未探索过或探索次数较少的动作，从而实现更广泛的探索。</p>
+<h3>优势与应用</h3>
+<h4>1. 促进探索</h4>
+<p>乐观初始值方法通过高估动作值，迫使算法在早期阶段探索更多的动作。这种方式特别适用于那些需要快速找到最优解的环境。</p>
+<h4>2. 适应性强</h4>
+<p>相比于 ε-贪婪方法，乐观初始值方法在特定环境中可能表现更为优越，特别是在奖励分布较为复杂且容易陷入局部最优的情况下。通过高估初始值，可以更有效地避免早期的次优选择。</p>
+<h3>实验与结果</h3>
+<p>在实验中，采用了乐观初始值方法对10臂强盗问题进行测试。将每个动作的初始值设定为较高的值（例如5），并运行1000个时间步。</p>
+<h4>实验结果分析</h4>
+<ul>
+<li><strong>平均奖励</strong>：实验结果显示，乐观初始值方法在早期阶段的探索次数显著高于其他方法。虽然在初期由于高估导致奖励值较低，但随着时间的推移，算法能够更快地收敛到最优解，最终获得更高的平均奖励。</li>
+<li><strong>探索比例</strong>：与传统方法相比，乐观初始值方法能够在较短的时间内探索所有动作，从而更快地发现和利用最优动作。</li>
+</ul>
+<h3>实例分析</h3>
+<p>假设我们在一个10臂强盗问题中应用乐观初始值方法，初始值设定为5。运行结果显示：</p>
+<ul>
+<li>在前200步，算法几乎对每个动作都进行了多次选择，确保了充分的探索。</li>
+<li>随着时间推移，算法逐渐收敛到最优动作，奖励值稳定在较高水平。</li>
+</ul>
+<h3>结论</h3>
+<p>乐观初始值方法是一种简单而有效的策略，通过高估初始动作值来促进探索，特别适用于需要快速找到最优解的环境。尽管这种方法在初期可能会由于高估导致较低的即时奖励，但其长远效果显著，能够更快地收敛到最优解，适用于多种强化学习问题。未来的研究可以进一步优化初始值设定，以适应不同环境和问题的需求。</p>
+
+    <h3>Python 文件</h3>
+    <pre><code># 05_2.6_乐观初始值
+
+"""
+Lecture: /02._表格解法方法
+Content: 05_2.6_乐观初始值
+"""
+
+</code></pre>
+  </div>
+</body>
+</html>
+  

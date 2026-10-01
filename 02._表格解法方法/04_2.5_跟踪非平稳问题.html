@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <title>2.5 跟踪非平稳问题</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Math&display=swap">
+  <link rel="stylesheet" href="../markdown.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="../markdown.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>04_2.5_跟踪非平稳问题</h1>
+<pre><code>Lecture: /02._表格解法方法
+Content: 04_2.5_跟踪非平稳问题
+</code></pre>
+<h2>2.5 跟踪非平稳问题</h2>
+<h3>引言</h3>
+<p>在强化学习中，我们经常面临非平稳的环境，其中奖励的概率会随时间变化。在这种情况下，传统的基于样本平均的动作值估计方法可能无法适应环境的变化。为了有效地应对非平稳问题，我们需要采用能够及时反映最新奖励信息的方法。</p>
+<h3>非平稳问题的应对策略</h3>
+<h4>1. 使用常数步长参数</h4>
+<p>一个应对非平稳问题的有效方法是使用常数步长参数来更新动作值估计。常数步长参数可以使得新的奖励对估计值的影响较大，从而更好地跟踪奖励分布的变化。</p>
+<p>增量更新规则可以表示为：
+$$ Q_{n+1}(a) = Q_n(a) + \alpha (R_n - Q_n(a)) $$
+其中，$\alpha$ 是一个常数步长参数，取值范围为 $0 &lt; \alpha \leq 1$。</p>
+<p>这种方法使得 $Q_{n+1}(a)$ 成为过去奖励和初始估计 $Q_1$ 的加权平均值：
+$$ Q_{n+1}(a) = \alpha R_n + (1 - \alpha)Q_n(a) $$</p>
+<p>进一步展开可以得到：
+$$ Q_{n+1}(a) = \alpha R_n + (1 - \alpha)\alpha R_{n-1} + (1 - \alpha)^2\alpha R_{n-2} + \cdots + (1 - \alpha)^{n-1}\alpha R_1 + (1 - \alpha)^n Q_1 $$</p>
+<p>这种加权平均称为指数递减平均，因为随着时间的推移，旧的奖励权重会按指数衰减。</p>
+<h4>2. 可变步长参数</h4>
+<p>有时，使用可变步长参数可能更加方便。设 $\alpha_n(a)$ 表示在第 $n$ 次选择动作 $a$ 后使用的步长参数。传统的样本平均法使用的是 $\alpha_n(a) = \frac{1}{n}$，这种方法能够保证估计值收敛到真实值。</p>
+<p>然而，对于非平稳环境，常数步长参数 $\alpha_n(a) = \alpha$ 更为合适。虽然这种方法无法保证完全收敛，但能够持续跟踪最新的奖励变化。</p>
+<h3>实验与结果</h3>
+<p>在实验中，使用了10臂强盗问题来测试不同方法在非平稳环境中的表现。具体做法是让每个动作的真实值 $q^*(a)$ 以独立的随机步长变化（每步添加一个均值为0、标准差为0.01的正态分布增量）。</p>
+<p>实验结果表明，使用常数步长参数的方法在非平稳环境中表现优于传统的样本平均法。随着时间的推移，常数步长参数方法能够更好地适应奖励分布的变化，从而在长期内获得更高的平均奖励。</p>
+<h3>结论</h3>
+<p>在面对非平稳问题时，使用常数步长参数更新动作值估计是一种有效的方法。它能够通过给予最新奖励更大的权重，从而更好地跟踪环境变化。尽管这种方法不能保证估计值的完全收敛，但在实际应用中往往能取得更好的表现。未来的研究可以进一步优化步长参数的选择，以提高算法的适应性和稳定性。</p>
+
+    <h3>Python 文件</h3>
+    <pre><code># 04_2.5_跟踪非平稳问题
+
+"""
+Lecture: /02._表格解法方法
+Content: 04_2.5_跟踪非平稳问题
+"""
+
+import numpy as np
+import pandas as pd
+from typing import List, Tuple
+
+class NonstationaryBandit:
+    """跟踪非平稳问题的实现类
+
+    Attributes:
+        num_arms: 动作数量，即拉杆数量
+        true_values: 各拉杆的真实奖励期望值
+        estimated_values: 各拉杆的估计奖励期望值
+        action_counts: 各拉杆的被选择次数
+        alpha: 常数步长参数
+        reward_variation: 每步奖励的变化
+    """
+
+    def __init__(self, num_arms: int = 10, alpha: float = 0.1, reward_variation: float = 0.01) -> None:
+        """
+        初始化跟踪非平稳问题实例
+        
+        Args:
+            num_arms: 动作数量，默认为10
+            alpha: 常数步长参数，默认为0.1
+            reward_variation: 每步奖励的变化，默认为0.01
+        """
+        self.num_arms = num_arms
+        self.alpha = alpha
+        self.reward_variation = reward_variation
+        self.true_values = np.random.randn(num_arms)  # 各拉杆的真实奖励期望值
+        self.estimated_values = np.zeros(num_arms)  # 各拉杆的估计奖励期望值
+        self.action_counts = np.zeros(num_arms)  # 各拉杆的被选择次数
+
+    def select_action(self) -> int:
+        """
+        根据ε-贪婪策略选择动作
+        
+        Returns:
+            选择的动作索引
+        """
+        if np.random.rand() < 0.1:  # ε值设定为0.1
+            return np.random.randint(self.num_arms)  # 随机选择动作
+        else:
+            return np.argmax(self.estimated_values)  # 选择估计值最大的动作
+
+    def update_estimates(self, action: int, reward: float) -> None:
+        """
+        更新动作的估计值
+        
+        Args:
+            action: 动作索引
+            reward: 动作获得的奖励
+        """
+        self.action_counts[action] += 1
+        self.estimated_values[action] += self.alpha * (reward - self.estimated_values[action])
+
+    def run(self, steps: int) -> List[Tuple[int, float]]:
+        """
+        运行跟踪非平稳问题的算法
+        
+        Args:
+            steps: 运行的步数
+        
+        Returns:
+            每一步的动作和奖励
+        """
+        results = []
+        for _ in range(steps):
+            action = self.select_action()
+            reward = np.random.randn() + self.true_values[action]
+            self.update_estimates(action, reward)
+            results.append((action, reward))
+            self.true_values += np.random.randn(self.num_arms) * self.reward_variation  # 更新真实值，模拟非平稳环境
+        return results
+
+def main():
+    """
+    主函数，执行跟踪非平稳问题的算法并打印结果
+    """
+    num_arms = 10
+    steps = 1000
+    alpha = 0.1
+    reward_variation = 0.01
+
+    bandit = NonstationaryBandit(num_arms, alpha, reward_variation)
+    results = bandit.run(steps)
+
+    # 转换为DataFrame并打印结果
+    df = pd.DataFrame(results, columns=['Action', 'Reward'])
+    print(df.describe())
+
+    print(f"真实值: {bandit.true_values}")
+    print(f"估计值: {bandit.estimated_values}")
+    print(f"选择次数: {bandit.action_counts}")
+
+    return df
+
+# Run the main function and save results
+df_results = main()
+df_results.to_csv("dataset/nonstationary_bandit_results.csv", index=False)
+</code></pre>
+  </div>
+</body>
+</html>
+  

@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <title>2.4 增量实现</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Math&display=swap">
+  <link rel="stylesheet" href="../markdown.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="../markdown.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>03_2.4_增量实现</h1>
+<pre><code>Lecture: /02._表格解法方法
+Content: 03_2.4_增量实现
+</code></pre>
+<h2>2.4 增量实现</h2>
+<h3>引言</h3>
+<p>在动作值方法中，我们通常通过观察到的奖励的样本平均值来估计动作值。为了有效地计算这些平均值，特别是在内存和计算复杂度上保持常量，我们需要使用增量方法。</p>
+<h3>基本思想</h3>
+<p>增量实现的核心思想是通过逐步更新平均值，而不是每次计算新奖励时重新计算所有奖励的总和和平均值。这样可以在每次步骤中保持计算复杂度和内存需求为常量。</p>
+<h3>增量更新公式</h3>
+<p>假设我们已经有了动作 $a$ 的估计值 $Q_n(a)$，它是在 $a$ 被选择了 $n-1$ 次后的估计值。现在，我们收到了第 $n$ 次选择动作 $a$ 后的奖励 $R_n$，新的估计值 $Q_{n+1}(a)$ 可以通过以下公式计算：</p>
+<p>$$ Q_{n+1}(a) = Q_n(a) + \frac{1}{n} [R_n - Q_n(a)] $$</p>
+<p>这一公式中的每一项都有其特定含义：</p>
+<ul>
+<li>$Q_n(a)$ 是之前的估计值。</li>
+<li>$\frac{1}{n}$ 是一个递减的步长参数。</li>
+<li>$[R_n - Q_n(a)]$ 是新的奖励与当前估计值之间的误差。</li>
+</ul>
+<p>这个公式展示了一种通用的增量更新形式，可以表达为：</p>
+<p>$$ 新的估计值 = 旧的估计值 + 步长 \times (目标 - 旧的估计值) $$</p>
+<p>这里的“目标”就是最新的奖励 $R_n$，而步长是 $\frac{1}{n}$。这种形式的更新在书中频繁出现，因为它能有效地在每次新奖励到来时进行小步更新，而不需要重新计算所有历史奖励的平均值。</p>
+<h3>实现细节</h3>
+<p>在实现增量更新时，只需存储当前的估计值 $Q_n(a)$ 和计数器 $n$，每次获得新奖励时使用公式更新。这大大减少了内存需求和计算复杂度，使得算法在面对大量数据时仍能高效运行。</p>
+<h3>应用场景</h3>
+<p>增量实现方法不仅适用于多臂强盗问题，在其他许多强化学习算法中也同样适用。比如在蒙特卡罗方法中，我们可以使用类似的增量方法来更新状态值或动作值，从而在每次新数据到来时高效地调整估计值。</p>
+<h3>结论</h3>
+<p>增量实现是强化学习中的一个重要技巧，通过在每次新奖励到来时进行小步更新，能够在内存和计算复杂度上保持常量。这样的更新方法不仅高效，而且能在长期内提供准确的估计，对于处理大规模数据和实时应用尤为重要。</p>
+<hr>
+
+    <h3>Python 文件</h3>
+    <pre><code># 03_2.4_增量实现
+
+"""
+Lecture: /02._表格解法方法
+Content: 03_2.4_增量实现
+"""
+
+</code></pre>
+  </div>
+</body>
+</html>
+  

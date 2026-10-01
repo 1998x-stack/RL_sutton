@@ -1,0 +1,271 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <title>4.4 值迭代</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Math&display=swap">
+  <link rel="stylesheet" href="../markdown.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="../markdown.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>03_4.4_值迭代</h1>
+<pre><code>Lecture: /04._动态规划
+Content: 03_4.4_值迭代
+</code></pre>
+<h3>03_4.4 值迭代的详细分析</h3>
+<h4>值迭代简介</h4>
+<p>值迭代（Value Iteration）是动态规划中的一种算法，用于在马尔可夫决策过程（MDP）中寻找最优策略。值迭代通过反复更新状态值函数，最终收敛到最优值函数 $v^<em>$，从而导出最优策略 $\pi^</em>$。相比策略迭代，值迭代不需要在每次迭代中完全执行策略评估，因此计算效率更高。</p>
+<h4>值迭代的步骤</h4>
+<p>值迭代的核心步骤包括以下几个方面：</p>
+<ol>
+<li>
+<p><strong>初始化</strong>：</p>
+<ul>
+<li>初始化所有状态的值函数 $V(s)$，可以任意设置初值，一般初始值设为零。</li>
+<li>设置一个小的正数 $\theta$，用于判断收敛性。</li>
+</ul>
+</li>
+<li>
+<p><strong>值函数更新</strong>：</p>
+<ul>
+<li>对于每个状态 $s$，根据贝尔曼最优方程更新值函数：
+$$
+V_{k+1}(s) = \max_a \sum_{s',r} p(s',r|s,a) [r + \gamma V_k(s')]
+$$
+其中，$p(s',r|s,a)$ 表示在状态 $s$ 采取动作 $a$ 后转移到状态 $s'$ 并获得回报 $r$ 的概率，$\gamma$ 是折扣因子。</li>
+</ul>
+</li>
+<li>
+<p><strong>收敛判定</strong>：</p>
+<ul>
+<li>检查值函数的变化是否小于阈值 $\theta$，如果是，则认为已收敛；否则，继续迭代。</li>
+</ul>
+</li>
+<li>
+<p><strong>策略提取</strong>：</p>
+<ul>
+<li>在值函数收敛后，提取最优策略：
+$$
+\pi^*(s) = \arg\max_a \sum_{s',r} p(s',r|s,a) [r + \gamma V(s')]
+$$</li>
+</ul>
+</li>
+</ol>
+<h4>数学证明与收敛性</h4>
+<p>值迭代算法通过不断更新值函数，最终收敛到最优值函数 $v^*$。以下是其收敛性的详细分析：</p>
+<ol>
+<li>
+<p><strong>贝尔曼最优方程</strong>：</p>
+<ul>
+<li>贝尔曼最优方程描述了最优值函数 $v^<em>$ 的递推关系：
+$$
+v^</em>(s) = \max_a \sum_{s',r} p(s',r|s,a) [r + \gamma v^*(s')]
+$$</li>
+<li>值迭代通过将贝尔曼最优方程转化为更新规则，不断逼近最优值函数。</li>
+</ul>
+</li>
+<li>
+<p><strong>值迭代的收敛性</strong>：</p>
+<ul>
+<li>对于任意初始值 $V_0(s)$，值迭代生成的值函数序列 ${V_k}$ 将收敛到最优值函数 $v^<em>$：
+$$
+\lim_{k \to \infty} V_k(s) = v^</em>(s)
+$$</li>
+<li>这种收敛性基于收缩映射原理，保证了每次迭代都使得值函数更接近于最优值函数。</li>
+</ul>
+</li>
+</ol>
+<h4>算法伪代码</h4>
+<p>以下是值迭代算法的伪代码：</p>
+<pre><code class="language-python">def value_iteration(states, actions, transition_probabilities, rewards, gamma, theta):
+    ```
+    值迭代算法
+
+    参数:
+    - states: 状态集合
+    - actions: 动作集合
+    - transition_probabilities: 状态转移概率矩阵
+    - rewards: 奖励矩阵
+    - gamma: 折扣因子
+    - theta: 收敛阈值
+
+    返回:
+    - V: 最优状态值函数
+    - pi: 最优策略
+    ```
+    # 初始化
+    V = {s: 0 for s in states}
+    
+    while True:
+        delta = 0
+        for s in states:
+            v = V[s]
+            V[s] = max(sum(transition_probabilities[(s, a, s_)] * (rewards[(s, a, s_)] + gamma * V[s_])
+                           for s_ in states) for a in actions)
+            delta = max(delta, abs(v - V[s]))
+        if delta &lt; theta:
+            break
+    
+    # 提取最优策略
+    pi = {}
+    for s in states:
+        pi[s] = max(actions, key=lambda a: sum(transition_probabilities[(s, a, s_)] *
+                                               (rewards[(s, a, s_)] + gamma * V[s_])
+                                               for s_ in states))
+    return V, pi
+</code></pre>
+<h4>应用案例：赌博者问题</h4>
+<p>赌博者问题是值迭代算法的经典应用。赌博者有机会通过一系列抛硬币的赌注来赢取奖金。如果硬币正面朝上，他赢得相当于赌注的金额；如果反面朝上，他失去赌注。游戏在赌博者赢得100美元或输光所有钱时结束。赌博者必须决定每次赌注的金额，以最大化赢得100美元的概率。</p>
+<ol>
+<li><strong>状态</strong>：赌博者的资金数量 $s \in {1, 2, ..., 99}$。</li>
+<li><strong>动作</strong>：每次赌注的金额 $a \in {0, 1, ..., \min(s, 100-s)}$。</li>
+<li><strong>奖励</strong>：赢得100美元时奖励+1，其余情况下奖励为0。</li>
+<li><strong>状态转移概率</strong>：硬币正面朝上的概率为 $p_h$，反面朝上的概率为 $1 - p_h$。</li>
+</ol>
+<p>通过值迭代算法，可以找到每个资金状态下的最优赌注策略。</p>
+<h4>值迭代的优缺点</h4>
+<p><strong>优点</strong>：</p>
+<ol>
+<li><strong>计算效率高</strong>：相比策略迭代，值迭代在每次迭代中只需进行一次全局更新，因此计算效率更高。</li>
+<li><strong>适用范围广</strong>：值迭代适用于各种MDP问题，特别是状态空间较大的情况。</li>
+</ol>
+<p><strong>缺点</strong>：</p>
+<ol>
+<li><strong>需要大量迭代</strong>：值迭代通常需要较多的迭代次数才能收敛到最优值函数。</li>
+<li><strong>计算复杂度高</strong>：在每次迭代中需要计算所有状态和动作的期望回报，计算复杂度较高。</li>
+</ol>
+<h4>结论</h4>
+<p>值迭代是动态规划中的一种高效算法，通过反复更新状态值函数，逐步逼近最优值函数，从而导出最优策略。其收敛性基于贝尔曼最优方程，保证了每次迭代都使得值函数更接近于最优值函数。尽管值迭代需要较多的迭代次数，但其计算效率高，适用于解决各种复杂的MDP问题。在实际应用中，值迭代展示了其强大的求解能力，为决策提供了最优解。</p>
+<h3>总结</h3>
+<p>值迭代作为动态规划中的一种重要方法，通过反复更新状态值函数，逐步逼近最优值函数。其数学原理保证了算法的收敛性和有效性，在实际应用中广泛用于解决复杂的决策问题。虽然在大规模问题中存在计算复杂度的挑战，但其高效的计算性能和广泛的适用范围使其成为求解MDP问题的理想选择。</p>
+
+    <h3>Python 文件</h3>
+    <pre><code># 03_4.4_值迭代
+
+"""
+Lecture: /04._动态规划
+Content: 03_4.4_值迭代
+"""
+
+import numpy as np
+from typing import Dict, Tuple, List
+
+class ValueIteration:
+    """
+    值迭代类，包含用于求解马尔可夫决策过程（MDP）的值迭代算法。
+
+    Attributes:
+        states: 状态集合
+        actions: 动作集合
+        transition_probabilities: 状态转移概率矩阵
+        rewards: 奖励矩阵
+        gamma: 折扣因子
+        theta: 收敛阈值
+    """
+
+    def __init__(self, states: List[int], actions: List[int],
+                 transition_probabilities: Dict[Tuple[int, int, int], float],
+                 rewards: Dict[Tuple[int, int, int], float], gamma: float, theta: float):
+        """
+        初始化值迭代类。
+
+        参数:
+            states: 状态集合
+            actions: 动作集合
+            transition_probabilities: 状态转移概率矩阵
+            rewards: 奖励矩阵
+            gamma: 折扣因子
+            theta: 收敛阈值
+        """
+        self.states = states
+        self.actions = actions
+        self.transition_probabilities = transition_probabilities
+        self.rewards = rewards
+        self.gamma = gamma
+        self.theta = theta
+        self.value_function = {s: 0 for s in states}
+        self.policy = {s: actions[0] for s in states}
+
+    def value_iteration(self) -> Tuple[Dict[int, float], Dict[int, int]]:
+        """
+        值迭代，通过反复更新状态值函数，直到值函数收敛。
+
+        返回:
+            Tuple[Dict[int, float], Dict[int, int]]: 最终的状态值函数和策略。
+        """
+        while True:
+            delta = 0
+            for s in self.states:
+                v = self.value_function[s]
+                self.value_function[s] = max(
+                    sum(
+                        self.transition_probabilities[(s, a, s_)] *
+                        (self.rewards[(s, a, s_)] + self.gamma * self.value_function[s_])
+                        for s_ in self.states
+                    )
+                    for a in self.actions
+                )
+                delta = max(delta, abs(v - self.value_function[s]))
+            if delta < self.theta:
+                break
+
+        # 提取最优策略
+        for s in self.states:
+            action_values = {
+                a: sum(
+                    self.transition_probabilities[(s, a, s_)] *
+                    (self.rewards[(s, a, s_)] + self.gamma * self.value_function[s_])
+                    for s_ in self.states
+                )
+                for a in self.actions
+            }
+            self.policy[s] = max(action_values, key=action_values.get)
+
+        return self.value_function, self.policy
+
+# 测试代码
+if __name__ == "__main__":
+    # 定义状态、动作、转移概率和奖励
+    states = [0, 1, 2, 3]
+    actions = [0, 1]
+    transition_probabilities = {
+        (0, 0, 0): 0.7, (0, 0, 1): 0.3,
+        (0, 1, 0): 0.4, (0, 1, 1): 0.6,
+        (1, 0, 2): 0.8, (1, 0, 3): 0.2,
+        (1, 1, 2): 0.5, (1, 1, 3): 0.5,
+        (2, 0, 0): 0.9, (2, 0, 1): 0.1,
+        (2, 1, 0): 0.2, (2, 1, 1): 0.8,
+        (3, 0, 2): 0.6, (3, 0, 3): 0.4,
+        (3, 1, 2): 0.3, (3, 1, 3): 0.7,
+    }
+    rewards = {
+        (0, 0, 0): 5, (0, 0, 1): 10,
+        (0, 1, 0): 2, (0, 1, 1): 7,
+        (1, 0, 2): 15, (1, 0, 3): 20,
+        (1, 1, 2): 9, (1, 1, 3): 13,
+        (2, 0, 0): 6, (2, 0, 1): 8,
+        (2, 1, 0): 3, (2, 1, 1): 4,
+        (3, 0, 2): 12, (3, 0, 3): 18,
+        (3, 1, 2): 14, (3, 1, 3): 11,
+    }
+    gamma = 0.9
+    theta = 0.0001
+
+    vi = ValueIteration(states, actions, transition_probabilities, rewards, gamma, theta)
+    value_function, policy = vi.value_iteration()
+
+    print("最终状态值函数:", value_function)
+    print("最终策略:", policy)
+</code></pre>
+  </div>
+</body>
+</html>
+  

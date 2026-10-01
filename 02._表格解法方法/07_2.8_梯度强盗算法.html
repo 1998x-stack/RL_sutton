@@ -1,0 +1,180 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <title>2.8 梯度强盗算法</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Math&display=swap">
+  <link rel="stylesheet" href="../markdown.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="../markdown.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>07_2.8_梯度强盗算法</h1>
+<pre><code>Lecture: /02._表格解法方法
+Content: 07_2.8_梯度强盗算法
+</code></pre>
+<h2>2.8 梯度强盗算法</h2>
+<h3>引言</h3>
+<p>在多臂强盗问题中，梯度强盗算法是一种基于策略梯度的方法。与传统的基于价值的方法不同，梯度强盗算法直接优化策略参数，从而选择动作。其核心思想是通过调整动作选择的概率分布，以最大化预期奖励。</p>
+<h3>算法原理</h3>
+<p>梯度强盗算法的基本思想是通过优化策略参数来直接影响动作选择的概率分布。具体来说，定义动作选择的偏好 $ H_t(a) $，并根据偏好计算动作选择的概率 $ \pi_t(a) $。更新偏好的梯度上升算法可以表示为：</p>
+<p>$$ \pi_t(a) = \frac{\exp(H_t(a))}{\sum_{b=1}^k \exp(H_t(b))} $$</p>
+<p>这里， $ H_t(a) $ 是动作 $a$ 的偏好， $ \pi_t(a) $ 是选择动作 $a$ 的概率。</p>
+<h3>梯度更新</h3>
+<p>在时间步 $t$，执行动作 $A_t$ 后，获得奖励 $R_t$，然后更新偏好 $ H_t(a) $ ：</p>
+<p>$$ H_{t+1}(a) = H_t(a) + \alpha (R_t - \bar{R}_t) (I(A_t = a) - \pi_t(a)) $$</p>
+<p>其中：</p>
+<ul>
+<li>$\alpha$ 是步长参数。</li>
+<li>$ \bar{R}_t $ 是时间步 $ t $ 时的平均奖励。</li>
+<li>$ I(A_t = a) $ 是指示函数，当 $ A_t = a $ 时为1，否则为0。</li>
+</ul>
+<h3>平均奖励的计算</h3>
+<p>为了平滑地估计平均奖励，常用的方法是递归计算平均奖励：</p>
+<p>$$ \bar{R}_{t+1} = \bar{R}_t + \beta (R_t - \bar{R}_t) $$</p>
+<p>其中， $\beta$ 是用于平滑平均奖励的步长参数。</p>
+<h3>实验与结果</h3>
+<p>通过实验可以验证梯度强盗算法在不同设置下的表现。以下是一个具体的实验设计与分析：</p>
+<ol>
+<li>
+<p><strong>实验设置</strong>：</p>
+<ul>
+<li>多臂强盗问题，拉杆数量为10。</li>
+<li>奖励值从标准正态分布中抽取。</li>
+<li>比较不同 $\alpha$ 和 $\beta$ 参数设置下的算法表现。</li>
+</ul>
+</li>
+<li>
+<p><strong>结果分析</strong>：</p>
+<ul>
+<li><strong>平均奖励</strong>：梯度强盗算法能够逐步优化动作选择概率，获得越来越高的平均奖励。</li>
+<li><strong>收敛速度</strong>：不同参数设置下，算法的收敛速度有所不同。适当的步长参数能够显著提高算法的收敛速度和最终性能。</li>
+</ul>
+</li>
+</ol>
+<h3>实例分析</h3>
+<p>假设我们在一个10臂强盗问题中应用梯度强盗算法，实验结果如下：</p>
+<ul>
+<li>在前200步，算法通过调整偏好参数，逐步优化动作选择概率。</li>
+<li>随着时间推移，选择最优动作的概率逐渐增加，平均奖励也逐渐提高。</li>
+</ul>
+<h3>结论</h3>
+<p>梯度强盗算法通过优化策略参数，直接影响动作选择的概率分布，能够在多臂强盗问题中表现出色。实验结果表明，适当的参数设置能够显著提高算法的收敛速度和最终性能。这种方法不仅适用于多臂强盗问题，还可以推广到其他需要策略优化的强化学习问题中。</p>
+<p>未来的研究可以进一步优化梯度强盗算法的参数选择，探索其在更复杂环境中的应用。通过结合其他强化学习方法，梯度强盗算法有望在更多实际应用中发挥重要作用。</p>
+
+    <h3>Python 文件</h3>
+    <pre><code># 07_2.8_梯度强盗算法
+
+"""
+Lecture: /02._表格解法方法
+Content: 07_2.8_梯度强盗算法
+"""
+
+import numpy as np
+import pandas as pd
+from typing import List, Tuple
+
+class GradientBandit:
+    """梯度强盗算法的实现类
+
+    Attributes:
+        num_arms: 动作数量，即拉杆数量
+        preferences: 各拉杆的偏好值
+        action_probs: 各拉杆的选择概率
+        avg_reward: 平均奖励
+        alpha: 步长参数
+    """
+
+    def __init__(self, num_arms: int = 10, alpha: float = 0.1) -> None:
+        """
+        初始化梯度强盗算法实例
+        
+        Args:
+            num_arms: 动作数量，默认为10
+            alpha: 步长参数，默认为0.1
+        """
+        self.num_arms = num_arms
+        self.alpha = alpha
+        self.preferences = np.zeros(num_arms)  # 各拉杆的偏好值
+        self.action_probs = np.ones(num_arms) / num_arms  # 各拉杆的选择概率
+        self.avg_reward = 0.0  # 平均奖励
+        self.true_values = np.random.randn(num_arms)  # 各拉杆的真实奖励期望值
+
+    def select_action(self) -> int:
+        """
+        根据当前的选择概率选择动作
+        
+        Returns:
+            选择的动作索引
+        """
+        return np.random.choice(self.num_arms, p=self.action_probs)
+
+    def update_preferences(self, action: int, reward: float) -> None:
+        """
+        更新动作的偏好值和选择概率
+        
+        Args:
+            action: 动作索引
+            reward: 动作获得的奖励
+        """
+        self.avg_reward += (reward - self.avg_reward) / (np.sum(self.action_probs) + 1)
+        self.preferences[action] += self.alpha * (reward - self.avg_reward) * (1 - self.action_probs[action])
+        for a in range(self.num_arms):
+            if a != action:
+                self.preferences[a] -= self.alpha * (reward - self.avg_reward) * self.action_probs[a]
+        self.action_probs = np.exp(self.preferences) / np.sum(np.exp(self.preferences))
+
+    def run(self, steps: int) -> List[Tuple[int, float]]:
+        """
+        运行梯度强盗算法
+        
+        Args:
+            steps: 运行的步数
+        
+        Returns:
+            每一步的动作和奖励
+        """
+        results = []
+        for _ in range(steps):
+            action = self.select_action()
+            reward = np.random.randn() + self.true_values[action]
+            self.update_preferences(action, reward)
+            results.append((action, reward))
+        return results
+
+def main():
+    """
+    主函数，执行梯度强盗算法并打印结果
+    """
+    num_arms = 10
+    steps = 1000
+    alpha = 0.1
+
+    bandit = GradientBandit(num_arms, alpha)
+    results = bandit.run(steps)
+
+    # 转换为DataFrame并打印结果
+    df = pd.DataFrame(results, columns=['Action', 'Reward'])
+    print(df.describe())
+
+    print(f"真实值: {bandit.true_values}")
+    print(f"选择概率: {bandit.action_probs}")
+    print(f"偏好值: {bandit.preferences}")
+
+    return df
+
+# Run the main function and save results
+df_results = main()
+df_results.to_csv("dataset/gradient_bandit_results.csv", index=False)
+</code></pre>
+  </div>
+</body>
+</html>
+  

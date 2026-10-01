@@ -1,0 +1,80 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <title>3.2 目标和奖励</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Math&display=swap">
+  <link rel="stylesheet" href="../markdown.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="../markdown.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>01_3.2_目标和奖励</h1>
+<pre><code>Lecture: /03._有限马尔可夫决策过程
+Content: 01_3.2_目标和奖励
+</code></pre>
+<h2>3.2 目标和奖励</h2>
+<h3>引言</h3>
+<p>在强化学习中，目标和奖励是两个核心概念。目标定义了代理在环境中试图实现的最终结果，而奖励则是代理在执行特定动作后从环境中获得的即时反馈信号。本节将详细探讨目标和奖励在有限马尔可夫决策过程（MDP）中的定义、作用及其在强化学习中的重要性。</p>
+<h3>目标</h3>
+<h4>定义</h4>
+<p>目标是代理在整个决策过程中试图最大化的长期收益。具体来说，目标可以表示为未来奖励的累积期望值。设 $G_t$ 表示在时间步 $t$ 开始后的总回报：</p>
+<p>$$ G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \cdots $$</p>
+<p>其中，$R_{t+k}$ 是在时间步 $t+k$ 时获得的奖励，$\gamma$ 是介于0和1之间的折扣因子，用于减少远期奖励的重要性。</p>
+<h4>作用</h4>
+<p>目标的设定对于代理的行为选择具有导向作用。在实际应用中，目标的形式可以根据具体问题的需求进行调整。例如，在一个游戏中，目标可以是获得尽可能高的分数；在一个自动驾驶任务中，目标可以是安全、高效地到达目的地。</p>
+<h3>奖励</h3>
+<h4>定义</h4>
+<p>奖励是代理在执行特定动作后从环境中获得的即时反馈信号。奖励的作用是通过强化学习算法来调整代理的策略，使其能够在长期内实现目标。</p>
+<p>奖励可以是正的（表示好的行为）或负的（表示坏的行为）。例如，在棋类游戏中，赢得比赛的奖励可能是正的，而犯规的奖励可能是负的。</p>
+<h4>作用</h4>
+<p>奖励信号在强化学习中起到了指导作用。通过观察奖励，代理可以了解其动作在实现目标方面的有效性，从而调整其策略。奖励信号的设计对于学习过程的效率和效果至关重要。</p>
+<h3>目标与奖励的关系</h3>
+<p>在强化学习中，目标和奖励是紧密联系在一起的。目标是长期的，通常涉及多个时间步，而奖励是即时的，每个时间步都可能发生。代理通过最大化累计奖励来实现其长期目标。这一过程涉及到两个关键函数：</p>
+<ol>
+<li>
+<p><strong>状态值函数 $V(s)$</strong>：</p>
+<ul>
+<li>表示在状态 $s$ 时的预期总奖励。</li>
+<li>公式： $V(s) = \mathbb{E}[G_t \mid S_t = s]$</li>
+</ul>
+</li>
+<li>
+<p><strong>行动值函数 $Q(s, a)$</strong>：</p>
+<ul>
+<li>表示在状态 $s$ 选择动作 $a$ 后的预期总奖励。</li>
+<li>公式： $Q(s, a) = \mathbb{E}[G_t \mid S_t = s, A_t = a]$</li>
+</ul>
+</li>
+</ol>
+<p>通过学习这两个函数，代理可以评估不同状态和动作的长期收益，从而优化其策略。</p>
+<h3>应用实例</h3>
+<h4>游戏</h4>
+<p>在游戏中，目标通常是获得尽可能高的分数或胜利。奖励信号可以设计为每个有效动作（如击败敌人、收集物品）所获得的分数。通过最大化累计分数，代理可以学习到如何在游戏中做出最佳决策。</p>
+<h4>自动驾驶</h4>
+<p>在自动驾驶任务中，目标是安全、高效地到达目的地。奖励信号可以设计为每个有效动作（如避开障碍、保持车道）所获得的安全和效率分数。通过最大化累计安全和效率分数，代理可以学习到如何在复杂的交通环境中驾驶。</p>
+<h4>金融交易</h4>
+<p>在金融交易中，目标是最大化投资回报。奖励信号可以设计为每个交易动作（如买入、卖出）所获得的利润或损失。通过最大化累计利润，代理可以学习到如何在金融市场中进行最佳交易决策。</p>
+<h3>结论</h3>
+<p>目标和奖励是强化学习中的两个核心概念。目标定义了代理在环境中试图实现的长期结果，而奖励则通过即时反馈信号来引导代理的行为选择。在实际应用中，合理设计目标和奖励对于实现高效的强化学习至关重要。本节详细探讨了目标和奖励的定义、作用及其关系，为读者理解和应用强化学习算法提供了理论基础和实践指导。</p>
+
+    <h3>Python 文件</h3>
+    <pre><code># 01_3.2_目标和奖励
+
+"""
+Lecture: /03._有限马尔可夫决策过程
+Content: 01_3.2_目标和奖励
+"""
+
+</code></pre>
+  </div>
+</body>
+</html>
+  

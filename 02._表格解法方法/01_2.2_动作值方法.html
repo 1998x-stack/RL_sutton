@@ -1,0 +1,162 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <title>2.2 动作值方法</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Math&display=swap">
+  <link rel="stylesheet" href="../markdown.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="../markdown.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>01_2.2_动作值方法</h1>
+<pre><code>Lecture: /02._表格解法方法
+Content: 01_2.2_动作值方法
+</code></pre>
+<h3>2.2 动作值方法</h3>
+<h4>1. 引言</h4>
+<p>在强化学习的上下文中，动作值方法是用于估计动作值并使用这些估计值进行动作选择的方法集合。动作的真实值是指选择该动作时的平均奖励。一个自然的估计方法是通过实际接收到的奖励进行平均。</p>
+<h4>2. 估计动作值</h4>
+<p>动作值 $Q_t(a)$ 的估计公式为：
+$$ Q_t(a) = \frac{\sum_{i=1}^{t-1} R_i \cdot I(A_i = a)}{\sum_{i=1}^{t-1} I(A_i = a)} $$
+其中 $I$ 为指示函数，当 $A_i = a$ 时 $I(A_i = a) = 1$，否则 $I(A_i = a) = 0$。如果分母为零，则定义 $Q_t(a)$ 为某个默认值，如0。随着时间步数趋向无穷，根据大数定律，$Q_t(a)$ 收敛于 $q^*(a)$。这被称为样本平均法，因为每个估计都是相关奖励的样本平均值。</p>
+<h4>3. 动作选择规则</h4>
+<p>最简单的动作选择规则是选择估计值最高的动作，即贪婪动作。如果有多个贪婪动作，则在它们之间随机选择。贪婪动作选择方法可以写为：
+$$ A_t = \arg\max_a Q_t(a) $$
+这种选择方法总是利用当前知识来最大化即时奖励，不会花时间采样那些看似较差的动作，以验证它们是否可能更好。</p>
+<h4>4. $\epsilon$-贪婪方法</h4>
+<p>为了在探索和利用之间取得平衡，可以采用 $\epsilon$-贪婪方法。在这种方法中，大部分时间选择估计值最大的动作，但有小概率 $\epsilon$ 随机选择动作。这样，随着时间步数的增加，每个动作都会被无限次采样，确保所有 $Q_t(a)$ 收敛于 $q^*(a)$，选择最优动作的概率趋于接近1。</p>
+<h4>5. 样本平均法的优缺点</h4>
+<ul>
+<li><strong>优点</strong>：简单直接，易于理解和实现。随着时间步数的增加，能够准确估计动作值。</li>
+<li><strong>缺点</strong>：在早期阶段，估计值可能偏差较大，导致选择较差的动作。为了解决这个问题，可以引入初始估计值和增量更新方法。</li>
+</ul>
+<h4>6. 实验与结果</h4>
+<p>通过实验比较了贪婪方法和 $\epsilon$-贪婪方法在多臂强盗问题上的表现。实验结果表明，$\epsilon$-贪婪方法在长期表现优于贪婪方法，因为它能更好地平衡探索与利用。</p>
+<h4>7. 小结</h4>
+<p>动作值方法是强化学习中估计和选择动作的基础方法之一。通过简单的样本平均法和 $\epsilon$-贪婪方法，可以有效地在探索和利用之间取得平衡，从而最大化长期奖励。在实际应用中，可以根据具体问题需求选择合适的估计和选择方法，以提高学习效果和效率。</p>
+<h3>详细解析</h3>
+<p><strong>1. 估计公式解析</strong>
+公式 $Q_t(a) = \frac{\sum_{i=1}^{t-1} R_i \cdot I(A_i = a)}{\sum_{i=1}^{t-1} I(A_i = a)}$ 是样本平均法的核心，通过逐步累积奖励和选择次数，更新动作值估计。这种方法简单但有效，能够随着时间步数增加不断逼近真实值。</p>
+<p><strong>2. 贪婪动作选择与 $\epsilon$-贪婪方法</strong>
+贪婪动作选择只关注当前估计值，容易陷入局部最优，而 $\epsilon$-贪婪方法通过引入随机选择，使得探索更多动作，从而提高发现全局最优的概率。实验表明，$\epsilon$-贪婪方法在长期表现更好，特别是在初始阶段更为明显。</p>
+<p><strong>3. 实验设计与结果分析</strong>
+在10臂强盗问题的实验中，设置 $\epsilon$ 为不同值（如0.01和0.1），比较其表现。结果显示，较大的 $\epsilon$ 值（如0.1）在初期探索更多，能更早发现最优动作，但长期表现略差于较小的 $\epsilon$ 值（如0.01）。这表明在实际应用中需要根据问题特性调整 $\epsilon$ 值，以平衡探索和利用。</p>
+<h3>结论</h3>
+<p>动作值方法在强化学习中具有重要地位，通过简单有效的样本平均法和 $\epsilon$-贪婪方法，能够在多臂强盗问题中实现较好的性能。未来的研究和应用可以进一步探索更加复杂和优化的估计与选择方法，以适应更加多样和复杂的强化学习问题。</p>
+
+    <h3>Python 文件</h3>
+    <pre><code># 01_2.2_动作值方法
+
+"""
+Lecture: /02._表格解法方法
+Content: 01_2.2_动作值方法
+"""
+
+import numpy as np
+import pandas as pd
+from typing import List, Tuple
+
+class ActionValueMethod:
+    """动作值方法的实现类
+
+    Attributes:
+        num_actions: 动作数量
+        epsilon: 探索概率
+        true_values: 各动作的真实奖励期望值
+        estimated_values: 各动作的估计奖励期望值
+        action_counts: 各动作的被选择次数
+    """
+
+    def __init__(self, num_actions: int, epsilon: float = 0.1) -> None:
+        """
+        初始化动作值方法实例
+        
+        Args:
+            num_actions: 动作数量
+            epsilon: 探索概率，默认为0.1
+        """
+        self.num_actions = num_actions
+        self.epsilon = epsilon
+        self.true_values = np.random.randn(num_actions)  # 各动作的真实奖励期望值
+        self.estimated_values = np.zeros(num_actions)  # 各动作的估计奖励期望值
+        self.action_counts = np.zeros(num_actions)  # 各动作的被选择次数
+
+    def select_action(self) -> int:
+        """
+        根据ε-贪婪策略选择动作
+        
+        Returns:
+            选择的动作索引
+        """
+        if np.random.rand() < self.epsilon:
+            return np.random.randint(self.num_actions)  # 随机选择动作
+        else:
+            return np.argmax(self.estimated_values)  # 选择估计值最大的动作
+
+    def update_estimates(self, action: int, reward: float) -> None:
+        """
+        更新动作的估计值
+        
+        Args:
+            action: 动作索引
+            reward: 动作获得的奖励
+        """
+        self.action_counts[action] += 1
+        self.estimated_values[action] += (reward - self.estimated_values[action]) / self.action_counts[action]
+
+    def run(self, steps: int) -> List[Tuple[int, float]]:
+        """
+        运行动作值方法
+        
+        Args:
+            steps: 运行的步数
+        
+        Returns:
+            每一步的动作和奖励
+        """
+        results = []
+        for _ in range(steps):
+            action = self.select_action()
+            reward = np.random.randn() + self.true_values[action]
+            self.update_estimates(action, reward)
+            results.append((action, reward))
+        return results
+
+def main():
+    """
+    主函数，执行动作值方法并打印结果
+    """
+    num_actions = 10
+    steps = 1000
+    epsilon = 0.1
+
+    avm = ActionValueMethod(num_actions, epsilon)
+    results = avm.run(steps)
+
+    # 转换为DataFrame并打印结果
+    df = pd.DataFrame(results, columns=['Action', 'Reward'])
+    print(df.describe())
+
+    print(f"真实值: {avm.true_values}")
+    print(f"估计值: {avm.estimated_values}")
+    print(f"选择次数: {avm.action_counts}")
+
+    # 返回数据表用于显示
+    return df
+
+if __name__ == "__main__":
+    df_results = main()
+
+</code></pre>
+  </div>
+</body>
+</html>
+  
