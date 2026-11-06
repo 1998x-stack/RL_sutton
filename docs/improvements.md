@@ -1,0 +1,14 @@
+### 2026-11-06 20:16 UTC — ChatGPT Portfolio Iteration
+- Run ID: portfolio-20261106T2016Z-rl11
+- Repo / Base SHA: 1998x-stack/RL_sutton / 445876b1c798fbbf70c0b26992e675edf4ce5fad
+- Historical context: docs/improvements.md returned 404 on default branch; first initialization. No PR found in repository search.
+- Product problem & expected user value: Students importing the nonstationary bandit example to reuse its class unexpectedly run 1000 steps and write a CSV. Make import safe without changing the experiment's model.
+- Engineering diagnosis & evidence: 02._表格解法方法/04_2.5_跟踪非平稳问题.py ended with unguarded main() and to_csv(); importing executes both. A missing dataset directory also breaks direct execution.
+- Options & decision: P1 import side effect (benefit 5, correctness 4, evidence 5, testability 4, cost 1, risk 1 = 16); P2 no input validation in bandit constructor (3+3+5+4-2-2=11); P2 deterministic argmax tie bias (3+2+5+4-2-2=10). Selected import safety as a narrow compatible change.
+- Changes: Guard script-only execution with __main__; create output directory relative to script; add tests/test_nonstationary_import.py. Class API and reward updates unchanged.
+- Validation: D: unittest test file committed but not executed against final GitHub checkout; network access to raw GitHub unavailable from local Python container. C: inspected source and code diff via connector. A: none. No CI pass asserted.
+- Security & regression review: No secrets, permissions, workflow, or deployment edits. Import is now side-effect free; script execution retains CSV generation with a stable script-relative location.
+- Risk & rollback: Script CSV output moves from working-directory-relative to script-relative path; revert PR commit if consumers depend on previous output path. Manual regression required before merge.
+- Follow-up: Execute python -m unittest discover -s tests -v on clean checkout and verify CLI output path, branch protection, and CI.
+- Commit: pending
+- PR: pending
