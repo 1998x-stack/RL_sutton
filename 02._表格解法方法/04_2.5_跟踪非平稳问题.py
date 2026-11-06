@@ -101,6 +101,10 @@ def main():
 
     return df
 
-# Run the main function and save results
-df_results = main()
-df_results.to_csv("dataset/nonstationary_bandit_results.csv", index=False)
+# Only generate example output when run as a script, never on import.
+if __name__ == "__main__":
+    from pathlib import Path
+
+    output = Path(__file__).resolve().parent / "dataset" / "nonstationary_bandit_results.csv"
+    output.parent.mkdir(parents=True, exist_ok=True)
+    main().to_csv(output, index=False)
